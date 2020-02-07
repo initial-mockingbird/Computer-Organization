@@ -36,7 +36,7 @@ list_obtener:
 	
 	bgt	$a1, $v0, error # Index <= Length
 	
-	lw	$a0, 8($a0)	# We load the first element address into $a0
+	lw	$a0, 12($a0)	# We load the first element address into $a0
 	
 	
 search_iteration: # Iterate trough the list looking for the element

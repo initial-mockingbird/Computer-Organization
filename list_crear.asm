@@ -14,6 +14,7 @@
 #DESCRIPCION LISTA
 # PRIMERO LLEVA UNA CABEZA QUE CONTIENE:
 #
+#	~Direccion header
 #	~Direccion funcion comparacion
 #	~Direccion funcion impresion
 #	~Direccion Primer elemento
@@ -30,7 +31,7 @@ list_crear:
 	li	$v0, 9
 	# Se guarda la direccion de la funcion de comparacion
 	move	$t0, $a0
-	li	$a0, 12
+	li	$a0, 16
 	syscall
 	
 	# Se guarda la direccion de la lista
@@ -40,25 +41,13 @@ list_crear:
 	beqz	$v0, mem_unavailable
 	
 	# Creando el Header (Funciones)
-	sw	$t0, 0($v0)
-	sw	$a1, 4($v0)
+	sw	$v0, 0($v0)
+	sw	$t0, 4($v0)
+	sw	$a1, 8($v0)
 	
 	li	$t0, 0xffffffff
-	sw	$t0, 8($v0)
+	sw	$t0, 12($v0)
 
-	# Se guarda la direccion de memoria del header para no borrarla y poder agregar
-	# la direccion al siguiente elemento
-	#move	$t0, $v0
-	
-	# Pedimos el espacio para el siguiente elemento
-	#li	$v0, 9
-	#li	$a0, 16
-	#syscall
-	
-	# Se agrega al HEADER la direccion del primer elemento
-	#sw	$v0, 8($t0)
-	
-	# Terminamos con codigo de error 0 (exitoso)
 	li	$v0, 0
 	jr	$ra
 	

@@ -9,13 +9,14 @@
 # Method Variables: <NONE>
 #	$t0: Element print method
 #	$t1: Element to print
+#
 # Side Effects: <NONE>
 #
 ## --- End Plan --- ##
 
 list_imprimir:
-	lw	$t0, 4($a0)
-	lw	$a0, 8($a0)	# Load first element (we should check emptiness first)
+	lw	$t0, 8($a0)	# Loads element print method
+	lw	$a0, 12($a0)	# Load first element (we should check emptiness first)
 	
 imprimir_elementos:
 
@@ -26,7 +27,7 @@ imprimir_elementos:
 	
 	lw	$a0, 4($a0)	# We load list element value address
 	
-	#jalr	$t0	# We print the element
+	jalr	$t0	# We print the element
 	
 	# EPILOGUE
 	lw	$t0, 8($sp)	
@@ -40,4 +41,5 @@ imprimir_elementos:
 	
 
 exit:
+	li	$v0, 1
 	jr	$ra

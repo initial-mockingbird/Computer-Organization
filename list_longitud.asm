@@ -12,9 +12,9 @@
 #
 ## --- End Plan --- ##
 
-list_longitud: # Header entry
+list_longitud: # Header entry/Empty check
 	li	$v0, 0 	# Set counter to 0
-	lw	$a0, 8($a0) # Load next element address
+	lw	$a0, 12($a0) # Load next element address
 	bne	$a0, 0xffffffff, iterate_list # If it isn't NIL, iterate
 	jr	$ra
 	
