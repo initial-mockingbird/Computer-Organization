@@ -1,15 +1,20 @@
-#FUNCION LIST_CREAR
+## --- Plan list_crear --- ##
 #
-#PARAMETROS DE ENTRADA
-#$a0:	Direccion de la funcion de comparacion
-#$a1:	Direccion de la funcio de Impresion
+# In Params:
+#	$a0: List elements comparison method address
+#	$a1: List elements print method address
 #
-#PARAMETROS DE SALIDA
-#$v0:	-1 si hubo error en la ejecucion y 0 si la ejecucion fue exitosa
-#$v1:	Direccion de la lista
-
-#USO DE REGISTROS INTERNOS
-#$t0:	Se guarda la direccion inicial del header temporalmente y la funcion de comparacion
+# Out Params:
+#	$v0: Operation ending code (-1 faulty execution/0 successfull execution)
+#	$v1: List address
+#
+# Method Variables:
+#	$t0: Temp HEADER next element address storage/Temp comparison method address storage
+#	
+# Side Effects
+#	An empty list consisting only of its HEADER is created in memory.
+#
+## --- End Plan --- ##
 
 #DESCRIPCION LISTA
 # PRIMERO LLEVA UNA CABEZA QUE CONTIENE:
