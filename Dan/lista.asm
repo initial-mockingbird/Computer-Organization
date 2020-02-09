@@ -22,7 +22,7 @@
 	Header:			.word 0
 	Element:			.word 0
 .text
- 	.globl list_crear 
+ 	.globl list_crear,list_insertar 
 
 # list_crear (address funCompar, funImprime: Int) -> adress:Int/Error code.
 ## --- Plan list_crear --- ##
@@ -32,8 +32,8 @@
 #	$a1: Pointer to print function.
 #
 # Out params:
-#	$v0: address of the List structure.
-#	$v1: error code.
+#	$v1: address of the List structure.
+#	$v0: error code.
 #
 # Method vars: 
 #	$t0: pointer to the header-like structure.
@@ -60,7 +60,7 @@ list_crear:
    syscall
 	
 	sw $v0 ($v0)			# Storing the address in the structure.
-	sw $v1 4($v0)			# Storing the header address in the structure.
+	sw $t0 4($v0)			# Storing the header address in the structure.
 	
 	li $v1 0xffffffff		
 	sw $v1 8($v0)			# Storing null in the element field.
@@ -104,10 +104,12 @@ list_insertar:
 	sw $t3 8($sp)
 	sw $t4 12($sp)
 	
+	move $t3 $zero
+	
 	xor $a0 $a0 $a1
 	xor $a1 $a0 $a1	# swapping the values in order to create a list_elem
 	xor $a0 $a0 $a1
-	
+							# now $a0 contains element to insert and $a1 contains list address.
 	
 	jal create_list_elem
 	
@@ -118,6 +120,7 @@ list_insertar:
 	
 	addiu $t3 $a0 4	# getting the pointer to the pointer of the header.
 	lw $t3 ($t3)		# getting the pointer of the header field.
+	move $a0 $t3		# now $a0 holds the pointer to the header structure.
 	
 	jal get_comp		# getting the compare function. 
 	
@@ -162,7 +165,7 @@ list_insertar:
 		move $a1 $t0	# We set the previous element to the element to insert.
 		jal set_prev
 		
-		beq $v0 0xffffffff end # if the previous element was null do nothing.
+		beq $v0 0xffffffff replace_inicio # if the previous element was null do nothing.
 		
 		move $a0 $v0	# preparing to set the prev next.
 		move $a1 $t0
@@ -174,6 +177,14 @@ list_insertar:
 		move $a0 $t1
 		move $a1 $t0
 		jal set_next
+		
+		move $a0 $t0
+		move $a1 $t1
+		jal set_prev
+		j end
+		
+	replace_inicio:
+		sw $t0 8($t4)
 		j end
 		
 	end:

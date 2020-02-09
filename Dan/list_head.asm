@@ -24,7 +24,7 @@
 	Point2Print: 	.word 0
 .text
 
-	.globl get_comp, get_print, set_comp, set_print
+	.globl create_header, get_comp, get_print, set_comp, set_print
 
 
 ## --- Plan create_header --- ##
@@ -121,6 +121,7 @@ get_print:
 #
 # In params:
 #	$a0: Pointer to head-like structure.
+#	$a1: value to set.
 #
 # Out params: <NONE>
 #
@@ -133,7 +134,7 @@ get_print:
 #
 ## --- End plan --- ##
 set_comp:
-	sw $a0 4($a0)
+	sw $a1 4($a0)
 	jr $ra
 
 
@@ -141,6 +142,7 @@ set_comp:
 #
 # In params:
 #	$a0: Pointer to head-like structure.
+#	$a1: value to set.
 #
 # Out params: <NONE>
 #
@@ -153,7 +155,7 @@ set_comp:
 #
 ## --- End plan --- ##
 set_print:
-	sw $a0 8($a0)
+	sw $a1 8($a0)
 	jr $ra
 
 

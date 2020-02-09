@@ -1,3 +1,7 @@
+.text
+
+.globl comparar
+
 comparar:
 	beq $a0 $a1 equal
 	blt $a0 $a1 less

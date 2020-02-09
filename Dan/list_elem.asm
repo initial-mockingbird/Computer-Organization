@@ -34,7 +34,7 @@
 	Null:				.word 0xffffffff
 .text
 
-	.globl get_value, get_prev, get_next, set_value, set_prev, set_next
+	.globl create_list_elem, get_value, get_prev, get_next, set_value, set_prev, set_next, compare_elements
 
 ## --- Plan create_list_elem --- ##
 #
@@ -57,7 +57,7 @@ create_list_elem:
 	sw $a0, ($sp)                       
 	
    li $v0 9
-   li $a0 12						# We ask for memory.
+   li $a0 16						# We ask for memory.
    syscall
    
    lw $a0 ($sp)					# Restoring the $a0.
@@ -240,7 +240,7 @@ compare_elements:
 	xor $a1 $a1 $a2
 
 	move $a0 $t0		# loading a in $a0
-	move $a0 $t1		# loading b in $a1
+	move $a1 $t1		# loading b in $a1
 	
 	jalr $a2				# comparing a and b
 	
