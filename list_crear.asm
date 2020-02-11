@@ -1,15 +1,20 @@
-#FUNCION LIST_CREAR
+## --- Plan list_crear --- ##
 #
-#PARAMETROS DE ENTRADA
-#$a0:	Direccion de la funcion de comparacion
-#$a1:	Direccion de la funcio de Impresion
+# In Params:
+#	$a0: List elements comparison method address
+#	$a1: List elements print method address
 #
-#PARAMETROS DE SALIDA
-#$v0:	-1 si hubo error en la ejecucion y 0 si la ejecucion fue exitosa
-#$v1:	Direccion de la lista
-
-#USO DE REGISTROS INTERNOS
-#$t0:	Se guarda la direccion inicial del header temporalmente y la funcion de comparacion
+# Out Params:
+#	$v0: Operation ending code (-1 faulty execution/0 successfull execution)
+#	$v1: List address
+#
+# Method Variables:
+#	$t0: Temp HEADER next element address storage/Temp comparison method address storage
+#	
+# Side Effects
+#	An empty list consisting only of its HEADER is created in memory.
+#
+## --- End Plan --- ##
 
 #DESCRIPCION LISTA
 # PRIMERO LLEVA UNA CABEZA QUE CONTIENE:
@@ -27,26 +32,24 @@
 #	~Direccion siguiente
 #
 list_crear:
-	# Pedimos la memoria para el HEADER
-	li	$v0, 9
-	# Se guarda la direccion de la funcion de comparacion
-	move	$t0, $a0
+	move	$t0, $a0 # We temporaly store comparison method address to allocate memory
+	
+	li	$v0, 9 # We allocate list HEADER space
 	li	$a0, 16
 	syscall
 	
-	# Se guarda la direccion de la lista
-	move	$v1, $v0
+	move	$v1, $v0 # We store list address in return register
 	
 	# Chequea si la direccion que devolvio es valida
+	# Preguntar a eduardo
 	beqz	$v0, mem_unavailable
 	
-	# Creando el Header (Funciones)
-	sw	$v0, 0($v0)
-	sw	$t0, 4($v0)
-	sw	$a1, 8($v0)
+	sw	$v0, 0($v0) # We store HEADER address
+	sw	$t0, 4($v0) # We store list comparison method
+	sw	$a1, 8($v0) # We store list print method
 	
 	li	$t0, 0xffffffff
-	sw	$t0, 12($v0)
+	sw	$t0, 12($v0) # We define HEADER next element as NIL
 
 	li	$v0, 0
 	jr	$ra

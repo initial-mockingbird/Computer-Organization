@@ -12,20 +12,19 @@
 #	final element.
 # 
 # Method variables:
+#	$a0: Current element address
 #	$t0: Comparison method for the elements
-#	$t1: Previous element
+#	$t1: Previous element in list
 	
 list_insertar:
 	
-	move	$t1, $a0 # First we copy the header address
+	move	$t1, $a0 # First we store the header address
 	lw	$t0, 4($a0) # We store the list element comparison method
 
 	lw	$a0, 12($a0) # We load the next position address
 	beq	$a0, 0xffffffff, last_element # Checks if the list if empty
 	j	compare_loop
 	
-
-# En a0 tengo la direccion del elemento actual always
 	
 compare_loop:
 	# PROLOGUE
@@ -49,28 +48,25 @@ compare_loop:
 
 	bgez	$v0, insert_here # If to_insert <= current_element
 	
-	move	$t1, $a0
+	move	$t1, $a0 # We update previous element address to the current element
 	lw	$a0, 12($a0) # We load next element address
 	beq	$a0, 0xffffffff, last_element # If there is no next element, add
 	j	compare_loop
 		
 insert_here:
-	move	$t3, $a0 # Temporal storage
+	move	$t3, $a0 # We prevent $a0 value loss
 	
 	li	$v0, 9 # We allocate new element memory
 	li	$a0, 16
 	syscall
 	
-	move	$a0, $t3 # We restore from temporal storage (dont do this)
-	
 	sw	$v0, 12($t1) # The previous next goest to new element
-	
-	sw	$v0, 0($v0)
-	sw	$a1, 4($v0)
+	sw	$v0, 0($v0) # We store new element address
+	sw	$a1, 4($v0) # We store new element value address
 	sw	$t1, 8($v0) # The new prev goes to the previous
-	sw	$a0, 12($v0) # The new next goest to current element
+	sw	$t3, 12($v0) # The new next goest to current element
 	
-	sw	$v0, 8($a0) # The current previous goes to new
+	sw	$v0, 8($t3) # The current previous goes to new
 	
 	li	$v0, 0
 	jr	$ra 
@@ -91,10 +87,3 @@ last_element:
 	
 	li	$v0, 0
 	jr	$ra
-
-	
-.include "list_crear.asm"
-#.include "list_longitud.asm"
-.include "list_obtener.asm"
-.include "list_imprimir.asm"
-.include "comparame_esta.asm"

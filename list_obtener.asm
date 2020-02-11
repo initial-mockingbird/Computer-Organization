@@ -56,5 +56,3 @@ obtain_element:	# Return the element at the requested index
 error: # Index out of bound case
 	li	$v1, -1
 	jr	$ra
-
-.include "list_longitud.asm"

@@ -1,7 +1,7 @@
 ## --- Plan list_longitud --- ##
 #
 # In Params:
-#	$a0: List address (Header address)
+#	$a0: List address (HEADER address)
 #
 # Out Params:
 #	$v0: List len (element number)
@@ -12,7 +12,7 @@
 #
 ## --- End Plan --- ##
 
-list_longitud: # Header entry/Empty check
+list_longitud: # HEADER entry/Empty check
 	li	$v0, 0 	# Set counter to 0
 	lw	$a0, 12($a0) # Load next element address
 	bne	$a0, 0xffffffff, iterate_list # If it isn't NIL, iterate
@@ -20,7 +20,7 @@ list_longitud: # Header entry/Empty check
 	
 	
 iterate_list:
-	addi	$v0, $v0, 1 # Count 1 element
+	addi	$v0, $v0, 1
 	lw	$a0, 12($a0)
 	bne	$a0, 0xffffffff, iterate_list
 	jr	$ra
