@@ -16,21 +16,22 @@
 #
 
 .data
-	Hash_head:	.word 0
-	Point2Comp: 	.word 0
-	Point2Hash: 	.word 0
+	Hash_head:			.word 0
+	Point2Comp: 		.word 0
+	Point2Hash: 		.word 0
 	Number_Classes:	.word 0
 .text
 
-	.globl create_header, get_comp, get_hash,get_number_part, set_comp, set_hash, set_number_part
+	.globl create_header_hash, get_comp_hash, get_hash_hash,get_number_part_hash, set_comp_hash, set_hash_hash, set_number_part_hash
 
 
 ## --- Plan create_header --- ##
 #
 # In params:
-#	$a0: Pointer to compare function
+#	$a0: Number of equivalence classes.
 #	$a1: Pointer to hash function.
-#	$a2: Number of equivalence classes.
+#	$a2: Pointer to compare function
+#
 #
 # Out params:
 #	$v0: error code 0|-1 for success|failure.
@@ -45,9 +46,9 @@
 # Example:
 #
 ## --- End plan --- ##
-create_header:									
+create_header_hash:									
 	addi $sp $sp -4				# before we ask for memory, we preserve $a0.
-	sw $a0, ($sp)                
+	sw $a0 ($sp)                
 	
    li $v0 9
    li $a0 16						# We ask for memory.
@@ -60,9 +61,9 @@ create_header:
    beqz $v0 mem_unavailable
       
    sw $v0 ($v0)					# storing the address in the structure.
-	sw $a0 4($v0)					# storing the compare pointer in the structure.
+	sw $a2 4($v0)					# storing the compare pointer in the structure.
 	sw $a1 8($v0)					# storing the hash pointer in the structure.
-	sw $a2 12($v0)					# storing the number of equivalence classes.
+	sw $a0 12($v0)					# storing the number of equivalence classes.
 	
 	li $v1 0							# now we only have to do a switch.
 	
@@ -93,7 +94,7 @@ create_header:
 # Example:
 #
 ## --- End plan --- ##
-get_comp:
+get_comp_hash:
 	lw $v0 4($a0)
 	jr $ra
 	
@@ -112,7 +113,7 @@ get_comp:
 # Example:
 #
 ## --- End plan --- ##
-get_hash:
+get_hash_hash:
 	lw $v0 8($a0)
 	jr $ra
 
@@ -134,7 +135,7 @@ get_hash:
 # Example:
 #
 ## --- End plan --- ##
-get_number_part:
+get_number_part_hash:
 	lw $v0 12($a0)
 	jr $ra			
 					
@@ -155,7 +156,7 @@ get_number_part:
 # Example:
 #
 ## --- End plan --- ##
-set_comp:
+set_comp_hash:
 	sw $a1 4($a0)
 	jr $ra
 
@@ -176,7 +177,7 @@ set_comp:
 # Example:
 #
 ## --- End plan --- ##
-set_hash:
+set_hash_hash:
 	sw $a1 8($a0)
 	jr $ra
 
@@ -199,7 +200,7 @@ set_hash:
 # Example:
 #
 ## --- End plan --- ##
-set_number_part:
+set_number_part_hash:
 	sw $a1 12($a0)
 	jr $ra
 
