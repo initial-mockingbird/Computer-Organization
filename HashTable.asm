@@ -17,6 +17,9 @@
 	Hashtable:	.word 0
 	HHeader:		.word 0
 	HContents:	.word 0
+	
+	
+	HHc:			.word 0
 .text
 	.globl tab_crear
 
@@ -50,6 +53,20 @@ tab_crear:
 	sw $a0 8($sp)
 	sw $s0 12($sp)     
 	
+	# we swap the number of partitions and the compare function in order to create 
+	# a new compare function for the list beneath.
+	# this is necessary due to we are going to insert pairs, and we need a 
+	# criteria to form a linear order.
+	xor $a0 $a0 $a2
+	xor $a2 $a0 $a2	
+	xor $a0 $a0 $a2
+	
+	jal HTcreate_compare
+	
+	move $a0 $a2	# restoring the number of partitions
+	move $a2 $v0	# getting the new compare function. ############----PENDING----#############
+	
+	
 	move $s0 $a0	# $t0 now has the number of equivalence classes.
 	li $v0 9
    li $a0 12						# We ask for memory.
@@ -61,7 +78,7 @@ tab_crear:
 	sw $v0 ($v0) 	# we write the address of the structure.
 	move $a0 $s0	# $a0 now holds the number of partitions.
 	move $s0 $v0	# $t0 now holds the address of the hashtable.
-	jal create_header_hash
+	jal crea	############
 	
 	bltz $v0 HTmem_unavailable
 	sw $v1 4($s0)	# we write the address of the header
@@ -87,6 +104,11 @@ tab_crear:
 		lw $s0 12($sp) 
 		addi $sp $sp -16	
 		jr $ra
+
+
+HTcompare:
+	
+
 
 .include "Hash_header.asm"
 .include "HashTableContents.asm"

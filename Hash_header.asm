@@ -287,3 +287,43 @@ set_print_hash:
 	jr $ra
 
 
+
+## --- HC_compare --- ##
+#
+# In params:
+#	$a0: pointer to compare function
+#	$a1: Pointer to first pair.
+#	$a2: Pointer to second pair.
+#
+# Out params: 
+#
+#	$v0: the result of the compare.
+#
+# Method vars: <NONE>
+#
+# Side Effects: 
+#	The number of equivalence classes is changed.
+#
+# Remark: 
+#
+#	HC_compare(x,y) = -1 if fst(x)<fst(y)
+#	HC_compare(x,y) = 0 if fst(x)==fst(y)
+#	HC_compare(x,y) = 1 if fst(x)>fst(y)
+#
+## --- End plan --- ##
+HC_compare: ############# NECESITO UNA VARIABLE / POS GLOBAL A LA CUAL REFERENCIAR LA VAR DE FUNC COMPARACION!!!
+
+	 
+	
+	addi $sp $sp -4
+	sw $fp ($sp)
+	
+	move $s0 $a0
+	move $a0 $a1
+	Pair_snd
+	move $v0 $v1
+	move $a0 $a2
+	Pair_fst
+
+
+

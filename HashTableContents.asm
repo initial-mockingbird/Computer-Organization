@@ -19,11 +19,11 @@
 
 .data
 
-HCHashContents_head:	.word 0
+HCHashContents_head:		.word 0
 HCPoint2Comp:				.word 0
 HCPoint2Hash:				.word 0
-HCNumber_Classes:		.word 0
-HCPoint2Print:			.word 0
+HCNumber_Classes:			.word 0
+HCPoint2Print:				.word 0
 
 .text
 
@@ -131,4 +131,4 @@ create_content_hash:
 		lw $s4 40($sp)   
 		addi $sp $sp 44
 		jr $ra	
-	
+
