@@ -15,6 +15,12 @@
 ## --- End Plan --- ##
 
 list_imprimir:
+	# PROLOGUE
+	sw	$fp, 0($sp)
+	move	$fp, $sp
+	addiu	$sp, $sp, -8
+	sw	$ra, 4($sp)
+	
 	lw	$t0, 8($a0)	# Loads element print method
 	lw	$a0, 12($a0)	# Load first element (we should check emptiness first)
 	beq	$a0, 0xffffffff, exit_imprimir
@@ -23,21 +29,19 @@ list_imprimir:
 	
 imprimir_elementos:
 
-	# PROLOGUE
-	addiu	$sp, $sp, -12
-	sw	$ra, 12($sp)
+	lw	$a0, 4($a0)	# We load list element value address
+	
+	# STORE DATA JUST IN CASE
+	addi	$sp, $sp, -8
 	sw	$t0, 8($sp)	# We store element print method
 	sw	$a0, 4($sp)	# We store current list element address
 	
-	lw	$a0, 4($a0)	# We load list element value address
-	
-	jalr	$t0	# We print the element
-	
-	# EPILOGUE
-	lw	$ra, 12($sp)
-	lw	$t0, 8($sp)	
+	jalr	$t0	# We print the element	
+
+	# LOAD DATA
+	lw	$t0, 8($sp)
 	lw	$a0, 4($sp)
-	addiu	$sp, $sp, 12
+	addi	$sp, $sp, 8
 	
 	lw	$a0, 12($a0)	# We load next element address
 	
@@ -46,5 +50,10 @@ imprimir_elementos:
 	
 
 exit_imprimir:
+	# EPILOGUE
+	lw	$ra, 4($sp)
+	move	$sp, $fp
+	lw	$fp, 0($sp)
+	
 	li	$v0, 1
 	jr	$ra

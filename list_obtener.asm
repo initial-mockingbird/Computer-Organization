@@ -18,21 +18,25 @@
 ## --- End Plan --- ##
 
 list_obtener:
-	blt	$a1, 1, error # 1 <= Index
-	
 	# PROLOGOUE
-	addiu	$sp, $sp, -12	
-	sw	$ra, 12($sp)
+	sw	$fp, 0($sp)
+	move	$fp, $sp
+	addi	$sp, $sp, -8
+	sw	$ra, 4($sp)
+	
+	blt	$a1, 1, error # 1 <= Index
+
+	# STORING DATA JUST IN CASE
+	addi	$sp, $sp, -8
 	sw	$a0, 8($sp)
 	sw	$a1, 4($sp)
 	
 	jal 	list_longitud	# We calculate list length
 	
-	# EPILOGUE
-	lw	$ra, 12($sp)
+	# RESTORING DATA
 	lw	$a0, 8($sp)
 	lw	$a1, 4($sp)
-	addiu	$sp, $sp, 12
+	addi	$sp, $sp, 8
 	
 	bgt	$a1, $v0, error # Index <= Length
 	
@@ -50,9 +54,17 @@ search_iteration: # Iterate trough the list looking for the element
 obtain_element:	# Return the element at the requested index
 	lw	$v0, 4($a0)
 	li	$v1, 0
-	jr	$ra
+	j	list_obtain_exit
 	
+
+list_obtain_exit:
+	# EPILOGUE
+	lw	$ra, 4($sp)
+	move	$sp, $fp
+	lw	$fp, 0($fp)
+	
+	jr	$ra
 	
 error: # Index out of bound case
 	li	$v1, -1
-	jr	$ra
+	j	list_obtain_exit

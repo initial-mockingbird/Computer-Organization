@@ -17,6 +17,11 @@
 #	$t1: Previous element in list
 	
 list_insertar:
+	# PROLOGUE
+	sw	$fp, 0($sp)
+	move	$fp, $sp
+	addi	$sp, $sp, -8
+	sw	$ra, 4($sp)
 	
 	move	$t1, $a0 # First we store the header address
 	lw	$t0, 4($a0) # We store the list element comparison method
@@ -27,9 +32,8 @@ list_insertar:
 	
 	
 compare_loop:
-	# PROLOGUE
-	addiu	$sp, $sp, -20
-	sw	$ra, 20($sp)
+	# STORING DATA JUST IN CASE
+	addi	$sp, $sp, -16
 	sw	$a0, 16($sp)
 	sw	$a1, 12($sp)
 	sw	$t0, 8($sp)
@@ -38,14 +42,13 @@ compare_loop:
 	lw	$a0, 4($a0) # We load current list element value
 	jalr	$t0 # We compare $a0 and $a1 (current list and element to insert)
 	
-	# EPILOGUE
-	lw	$ra, 20($sp)
+	# RESTORING DATA
 	lw	$a0, 16($sp)
 	lw	$a1, 12($sp)
 	lw	$t0, 8($sp)
 	lw	$t1, 4($sp)
-	addiu	$sp, $sp, 20
-
+	addi	$sp, $sp, 16
+	
 	bgez	$v0, insert_here # If to_insert <= current_element
 	
 	move	$t1, $a0 # We update previous element address to the current element
@@ -69,7 +72,7 @@ insert_here:
 	sw	$v0, 8($t3) # The current previous goes to new
 	
 	li	$v0, 0
-	jr	$ra 
+	j	list_insert_exit
 	
 	
 last_element:
@@ -86,4 +89,12 @@ last_element:
 	sw	$v0, 12($t1) # The previous next goes to new element
 	
 	li	$v0, 0
+	j	list_insert_exit
+	
+list_insert_exit:
+	# EPILOGUE
+	lw	$ra, 4($sp)
+	move	$sp, $fp
+	lw	$fp, 0($sp)
+	
 	jr	$ra

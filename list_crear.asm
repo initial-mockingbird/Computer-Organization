@@ -32,6 +32,11 @@
 #	~Direccion siguiente
 #
 list_crear:
+	# EPILOGUE
+	sw	$fp, 0($sp)
+	move	$fp, $sp
+	addiu	$sp, $sp, -4
+	
 	move	$t0, $a0 # We temporaly store comparison method address to allocate memory
 	
 	li	$v0, 9 # We allocate list HEADER space
@@ -40,9 +45,7 @@ list_crear:
 	
 	move	$v1, $v0 # We store list address in return register
 	
-	# Chequea si la direccion que devolvio es valida
-	# Preguntar a eduardo
-	beqz	$v0, mem_unavailable
+	beqz	$v0, mem_unavailable # We check if the returned dir is valid
 	
 	sw	$v0, 0($v0) # We store HEADER address
 	sw	$t0, 4($v0) # We store list comparison method
@@ -52,9 +55,16 @@ list_crear:
 	sw	$t0, 12($v0) # We define HEADER next element as NIL
 
 	li	$v0, 0
-	jr	$ra
+	j	list_crear_exit
 	
-	
+
 mem_unavailable:
 	li	$v0, -1
+	j	list_crear_exit
+
+
+list_crear_exit:
+	# PROLOGUE
+	move	$sp, $fp
+	lw	$fp, 0($fp)
 	jr	$ra

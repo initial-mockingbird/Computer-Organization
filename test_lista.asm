@@ -24,7 +24,7 @@ main:
 	
 	move	$a0, $t7
 	
-	jal	list_destruir
+	#jal	list_destruir
 	
 	li	$v0, 10
 	syscall
