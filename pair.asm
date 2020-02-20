@@ -40,20 +40,23 @@ PairSnd:		.word 0
 
 Pair:
 	# Prologue
-	addiu $sp $sp -12
 	sw $fp ($sp)
-	sw $ra 4($sp)
-	sw $s0 8($sp)	
+	sw $ra -4($sp)
+	sw $a0 -8($sp)
+	sw $a1 -12($sp)
+	sw $s0 -16($sp)	
+	move $fp $sp
+	addiu $sp $sp -20
 	
 	move $s0 $a0
 	li $v0 9
-	li $a0 4
+	li $a0 8
 	syscall
 	
 	bltz $v0 Pair_mem_unavailable
 	move $v1 $v0							# now $v1 holds the address of the structure
 	sw $s0 ($v1)							# storing the first element in the Pair
-	sw $a1 ($v1)							# storing the second element in the pair.
+	sw $a1 4($v1)							# storing the second element in the pair.
 	j Pair_exit
 	
 	Pair_mem_unavailable:
@@ -64,10 +67,13 @@ Pair:
 	Pair_exit:
 		move $a0 $s0
 		# Epilogue
-		sw $fp ($sp)
-		sw $ra 4($sp)
-		sw $s0 8($sp)
-		addiu $sp $sp 12
+		addiu $sp $sp 20
+		lw $fp ($sp)
+		lw $ra -4($sp)
+		lw $a0 -8($sp)
+		lw $a1 -12($sp)
+		lw $s0 -16($sp)	
+		
 		jr $ra
 
 
@@ -89,13 +95,16 @@ Pair:
 ## --- End plan --- ##
 Pair_fst:
 	# Prologue
-	addiu $sp $sp -4
 	sw $fp ($sp)	
+	move $fp $sp
+	addiu $sp $sp -4
 	
 	lw $v0 ($a0)
 	
-	sw $fp ($sp)
+	# Epilogue
 	addiu $sp $sp 4
+	lw $fp ($sp)
+	
 	jr $ra
 
 ## --- Pair_snd --- ##
@@ -116,11 +125,14 @@ Pair_fst:
 ## --- End plan --- ##
 Pair_snd:
 	# Prologue
-	addiu $sp $sp -4
 	sw $fp ($sp)	
+	move $fp $sp
+	addiu $sp $sp -4
 	
 	lw $v0 4($a0)
 	
-	sw $fp ($sp)
+	# Epilogue
 	addiu $sp $sp 4
+	lw $fp ($sp)	
+	
 	jr $ra

@@ -47,25 +47,13 @@
 #
 ## --- End plan --- ##
 tab_crear:
-	addi $sp $sp -16		
+	# Prologue
 	sw $fp ($sp)		
-	sw $ra 4($sp)
-	sw $a0 8($sp)
-	sw $s0 12($sp)     
-	
-	# we swap the number of partitions and the compare function in order to create 
-	# a new compare function for the list beneath.
-	# this is necessary due to we are going to insert pairs, and we need a 
-	# criteria to form a linear order.
-	xor $a0 $a0 $a2
-	xor $a2 $a0 $a2	
-	xor $a0 $a0 $a2
-	
-	jal HTcreate_compare
-	
-	move $a0 $a2	# restoring the number of partitions
-	move $a2 $v0	# getting the new compare function. ############----PENDING----#############
-	
+	sw $ra -4($sp)
+	sw $a0 -8($sp)
+	sw $s0 -12($sp)
+	move $fp $sp
+	addi $sp $sp -16	     
 	
 	move $s0 $a0	# $t0 now has the number of equivalence classes.
 	li $v0 9
@@ -77,17 +65,18 @@ tab_crear:
 	bltz $v0 HTmem_unavailable
 	sw $v0 ($v0) 	# we write the address of the structure.
 	move $a0 $s0	# $a0 now holds the number of partitions.
-	move $s0 $v0	# $t0 now holds the address of the hashtable.
-	jal crea	############
+	move $s0 $v0	# $s0 now holds the address of the hashtable.
+	jal create_header_hash	
 	
 	bltz $v0 HTmem_unavailable
 	sw $v1 4($s0)	# we write the address of the header
 	move $a0 $s0	# $a0 holds the adress of the hashtab;e
-	move $t0 $v1	# $v1 holds the address of the header structure.
+	#move $s0 $v1	# $v1 holds the address of the header structure.
 	jal create_content_hash
    
    bltz $v0 HTmem_unavailable
-   sw $v1 8($a0) # we write the address of the contents.
+   sw $v1 8($s0) 	# we write the address of the contents.
+   move $v1 $s0  	# $v1 now holds the address of the hashtable.
    j exit_tab_crear
    
 	
@@ -98,17 +87,14 @@ tab_crear:
 			j exit_tab_crear
 	
 	exit_tab_crear:
+		# Epilogue
+		addi $sp $sp 16	
 		lw $fp ($sp)		
-		lw $ra 4($sp)
-		lw $a0 8($sp)
-		lw $s0 12($sp) 
-		addi $sp $sp -16	
+		lw $ra -4($sp)
+		lw $a0 -8($sp)
+		lw $s0 -12($sp)
+		
 		jr $ra
-
-
-HTcompare:
-	
-
 
 .include "Hash_header.asm"
 .include "HashTableContents.asm"

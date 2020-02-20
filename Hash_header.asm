@@ -21,9 +21,12 @@
 	HHPoint2Hash: 		.word 0
 	HHNumber_Classes:	.word 0
 	HHPoint2Print:		.word 0
+	PairComp:			.word 0			# Global address which is used as a aux variable in order to perform
+												# a curry version of the pair compare function and be able to pass
+												# it to the list as a 2 argument function.
 .text
 
-	.globl create_header_hash, get_comp_hash, get_hash_hash,get_number_part_hash, set_comp_hash, set_hash_hash, set_number_part_hash
+	.globl PairComp, HC_compare
 
 
 ## --- Plan create_header --- ##
@@ -49,22 +52,28 @@
 #
 ## --- End plan --- ##
 create_header_hash:									
-	
-	addi $sp $sp -12				# before we ask for memory, we preserve $a0.
+	# Prologue
 	sw $fp 0($sp)
-	sw $ra 4($sp)                
-	sw $a0 8($sp)
+	sw $ra -4($sp)                
+	sw $a0 -8($sp)
+	sw $a1 -12($sp)
+	sw $a2 -16($sp)
+	sw $a3 -20($sp)
+	move $fp $sp
+	addi $sp $sp -24			
 	
    li $v0 9
    li $a0 20						# We ask for memory.
    syscall
-   lw $a0 8($sp)
+   lw $a0 16($sp)
    sw $v0 ($v0)					# storing the address in the structure.
 	sw $a2 4($v0)					# storing the compare pointer in the structure.
 	sw $a1 8($v0)					# storing the hash pointer in the structure.
 	sw $a0 12($v0)					# storing the number of equivalence classes.
 	sw $a3 16($v0)					# storing the pointer to the printing function. 
-
+	
+	sw $a2 PairComp				# storing the compare function in the global label.
+	
    bltz $v0 Hhmem_unavailable
       
 	li $v1 0							# now we only have to do a switch.
@@ -83,10 +92,14 @@ create_header_hash:
 
 	endCreateHeader:
 		
+		# Epilogue
+		addi $sp $sp 24
 		lw $fp 0($sp)
-		lw $ra 4($sp)                
-		lw $a0 8($sp)
-		addi $sp $sp 12				# before we ask for memory, we preserve $a0.
+		lw $ra -4($sp)                
+		lw $a0 -8($sp)
+		lw $a1 -12($sp)
+		lw $a2 -16($sp)
+		lw $a3 -20($sp)
 		jr $ra
 		
 		
@@ -107,11 +120,17 @@ create_header_hash:
 #
 ## --- End plan --- ##
 get_comp_hash:
-	addi $sp $sp -4
+	# Prologue
 	sw $fp ($sp)
+	move $fp $sp
+	addi $sp $sp -4
+	
 	lw $v0 4($a0)
-	lw $fp ($sp)
+	
+	# Epilogue
 	addi $sp $sp 4
+	lw $fp ($sp)
+	
 	jr $ra
 	
 ## --- Plan get_hash --- ##
@@ -130,11 +149,16 @@ get_comp_hash:
 #
 ## --- End plan --- ##
 get_hash_hash:
-	addi $sp $sp -4
+	# Prologue
 	sw $fp ($sp)
+	move $fp $sp
+	addi $sp $sp -4
+	
 	lw $v0 8($a0)
-	lw $fp ($sp)
+	
+	# Epilogue
 	addi $sp $sp 4
+	lw $fp ($sp)
 	jr $ra
 
 	
@@ -156,11 +180,16 @@ get_hash_hash:
 #
 ## --- End plan --- ##
 get_number_part_hash:
-	addi $sp $sp -4
+	# Prologue
 	sw $fp ($sp)
+	move $fp $sp
+	addi $sp $sp -4
+	
 	lw $v0 12($a0)
-	lw $fp ($sp)
+	
+	# Epilogue
 	addi $sp $sp 4
+	lw $fp ($sp)
 	jr $ra			
 					
 ## --- Plan get_print_hash --- ##
@@ -179,11 +208,17 @@ get_number_part_hash:
 #
 ## --- End plan --- ##
 get_print_hash:
-	addi $sp $sp -4
+	# Prologue
 	sw $fp ($sp)
+	move $fp $sp
+	addi $sp $sp -4
+	
 	lw $v0 16($a0)
-	lw $fp ($sp)
+	
+	
+	# Epilogue
 	addi $sp $sp 4
+	lw $fp ($sp)
 	jr $ra			
 					
 ## --- Plan set_comp --- ##
@@ -203,11 +238,16 @@ get_print_hash:
 #
 ## --- End plan --- ##
 set_comp_hash:
-	addi $sp $sp -4
+	# Prologue
 	sw $fp ($sp)
+	move $fp $sp
+	addi $sp $sp -4
+	
 	sw $a1 4($a0)
-	lw $fp ($sp)
+	
+	# Epilogue
 	addi $sp $sp 4
+	lw $fp ($sp)
 	jr $ra
 
 
@@ -228,11 +268,16 @@ set_comp_hash:
 #
 ## --- End plan --- ##
 set_hash_hash:
-	addi $sp $sp -4
+	# Prologue
 	sw $fp ($sp)
+	move $fp $sp
+	addi $sp $sp -4
+	
 	sw $a1 8($a0)
-	lw $fp ($sp)
+	
+	# Epilogue
 	addi $sp $sp 4
+	lw $fp ($sp)
 	jr $ra
 
 
@@ -255,12 +300,18 @@ set_hash_hash:
 #
 ## --- End plan --- ##
 set_number_part_hash:
-	addi $sp $sp -4
+	# Prologue
 	sw $fp ($sp)
+	move $fp $sp
+	addi $sp $sp -4
+	
 	sw $a1 12($a0)
-	lw $fp ($sp)
+	
+	# Epilogue
 	addi $sp $sp 4
+	lw $fp ($sp)
 	jr $ra
+
 
 ## --- Plan set_number_part --- ##
 #
@@ -279,21 +330,27 @@ set_number_part_hash:
 #
 ## --- End plan --- ##
 set_print_hash:
-	addi $sp $sp -4
+	# Prologue
 	sw $fp ($sp)
+	move $fp $sp
+	addi $sp $sp -4
+	
 	sw $a1 16($a0)
-	lw $fp ($sp)
+	
+	
+	# Epilogue
 	addi $sp $sp 4
+	lw $fp ($sp)
 	jr $ra
+
 
 
 
 ## --- HC_compare --- ##
 #
 # In params:
-#	$a0: pointer to compare function
-#	$a1: Pointer to first pair.
-#	$a2: Pointer to second pair.
+#	$a0: Pointer to first pair.
+#	$a1: Pointer to second pair.
 #
 # Out params: 
 #
@@ -311,19 +368,33 @@ set_print_hash:
 #	HC_compare(x,y) = 1 if fst(x)>fst(y)
 #
 ## --- End plan --- ##
-HC_compare: ############# NECESITO UNA VARIABLE / POS GLOBAL A LA CUAL REFERENCIAR LA VAR DE FUNC COMPARACION!!!
-
-	 
-	
-	addi $sp $sp -4
+HC_compare: 
+	# Prologue
 	sw $fp ($sp)
+	sw $ra -4($sp)
+	sw $a0 -8($sp)
+	sw $a1 -12($sp)
+	move $fp $sp
+	addi $sp $sp -16
+
 	
-	move $s0 $a0
+	
+	jal Pair_snd
 	move $a0 $a1
-	Pair_snd
-	move $v0 $v1
-	move $a0 $a2
-	Pair_fst
+	move $a1 $v0
+	
+	jal Pair_snd
+	move $a0 $a1
+	move $a1 $v0
+	lw $a2 PairComp
+	
+	jalr $a2 
 
-
-
+	# Epilogue
+	addi $sp $sp 16
+	lw $fp ($sp)
+	lw $ra -4($sp)
+	lw $a0 -8($sp)
+	lw $a1 -12($sp)
+	
+	jr $ra
