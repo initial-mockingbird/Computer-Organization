@@ -14,7 +14,7 @@
 
 list_longitud: # HEADER entry/Empty check
 	# EPILOGUE
-	sw	$fp, 0($fp)
+	sw	$fp, 0($sp)
 	move	$fp, $sp
 	addi	$sp, $sp, -4
 	

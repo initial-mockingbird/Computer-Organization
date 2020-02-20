@@ -1,4 +1,4 @@
-## --- Plan list_longitud --- ##
+## --- Plan list_obtener --- ##
 #
 # In Params:
 #	$a0: List address (Header address)
@@ -61,7 +61,7 @@ list_obtain_exit:
 	# EPILOGUE
 	lw	$ra, 4($sp)
 	move	$sp, $fp
-	lw	$fp, 0($fp)
+	lw	$fp, 0($sp)
 	
 	jr	$ra
 	
