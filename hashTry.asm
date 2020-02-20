@@ -14,8 +14,14 @@ jal tab_crear
 sw $v1 table
 move $a0 $v1
 li $a1 1
-li $a2 1
+li $a2 100
 jal tab_insertar
+
+
+lw $a0 table
+li $a1 1
+jal tab_buscar
+
 
 lw $a0 table
 li $a1 2

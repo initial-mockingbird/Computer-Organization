@@ -65,7 +65,6 @@ Pair:
 		j Pair_exit
 	
 	Pair_exit:
-		move $a0 $s0
 		# Epilogue
 		addiu $sp $sp 20
 		lw $fp ($sp)

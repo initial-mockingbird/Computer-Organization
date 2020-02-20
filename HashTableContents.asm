@@ -99,10 +99,11 @@ create_content_hash:
 	sw $a2 PairComp 			# storing the compare function in the global label.
 	filling_hash_table:
 		beqz $s1 endCreateContent
-		move $a0 $s4			# cargamos la direccion sobre la cual vamos a crear la lista.
-		la $a1 HC_compare		# cargamos la funcion de comparacion
+		#move $a0 $s4			# cargamos la direccion sobre la cual vamos a crear la lista.
+		#la $a1 HC_compare		# cargamos la funcion de comparacion
+		la $a0 HC_compare
 		#move $a1 $s2			# cargamos la funcion de comparacion
-		move $a3 $s3			# y no cargamos funcion de impresion alguna.
+		move $a1 $s3			# y no cargamos funcion de impresion alguna.
 		jal list_crear
 		bltz $v0 HTCmem_unavailable 
 		sw $v1 ($s4)
@@ -356,6 +357,8 @@ tab_insertar:
 	addiu $a0 $a0 8		# we move it so it points to the pointer of the contents.
 	lw $a0 ($a0)			# we de-reference it and get the pointer.
 	addu $a0 $a0 $v0		# positioning ourselves in the list.
+	addi $a0 $a0 -1
+	lw $a0 ($a0)			# we de-reference the pointer in order to go to the list.
 	move $a1 $s2			# loading the element to insert.
 	jal list_insertar
 	bltz $v0 tab_insertar_error
