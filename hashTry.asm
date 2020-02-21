@@ -14,7 +14,7 @@ jal tab_crear
 sw $v1 table
 move $a0 $v1
 li $a1 1
-li $a2 100
+li $a2 2
 jal tab_insertar
 
 
@@ -24,9 +24,16 @@ jal tab_buscar
 
 
 lw $a0 table
-li $a1 2
-li $a2 2
+li $a1 1
+li $a2 5
 jal tab_insertar
+
+
+lw $a0 table
+li $a1 1
+li $a2 0
+jal tab_insertar
+
 
 lw $a0 table
 li $a1 4
@@ -37,6 +44,15 @@ lw $a0 table
 li $a1 3
 li $a2 3
 jal tab_insertar
+
+#lw $a0 table
+#jal tab_destruir
+
+lw $a0 table
+li $a1 8
+j tab_rehash
+
+lw $a0 table
 
 hashF: 
 	move $v0 $a0

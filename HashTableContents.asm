@@ -172,7 +172,7 @@ HC_buscar_elemento:
 	beqz $v0 HC_noSuchElement		# if there are no elements in the list, then throw no element.
 	
 	move $s0 $v0						# $s0 now stores the length of the list.
-	lw $a1 12($sp)
+	lw $a1 -12($fp)
 	
 	li $a0 0
 	jal Pair
@@ -183,7 +183,7 @@ HC_buscar_elemento:
 	HH_buscar_loop:
 		beqz $s0 HC_noSuchElement		# repeat until there are no more elements.
 	
-		lw $a0 8($sp)						# $a0 stores the address of the list.
+		lw $a0 -8($fp)						# $a0 stores the address of the list.
 		move $a1 $s0						# $a1 stores the position to discover
 		jal list_obtener					# now $v0 has the pair (element,key) that was stored in the index $s0
 		bltz $v1 HC_noSuchElement
@@ -255,25 +255,32 @@ tab_buscar:
 	jal get_comp_hash			
 	sw $v0 PairComp		# we set PairComp for when we need to do the search on the list.
 	
-	lw $a0 8($sp)			# $a0 holds again the address of the hashtable
+	lw $a0 -8($fp)			# $a0 holds again the address of the hashtable
 	addiu $a0 $a0 4		# and now the address of the header.
 	lw $a0 ($a0)			# and now a pointer to the header.
-	jal get_hash_hash			# we get the position of the array that we need to look for.
+	jal get_hash_hash		# we get the position of the array that we need to look for.
 	move $a0 $a1			# now it holds the key
 	jalr $v0					# we hash it.
-	lw $a0 8($sp)			# now $a0 holds the hashtable address again
+	move $s1 $v0			# $s1 holds the position of the array which we need to look.
+	lw $a0 -8($fp)			# now $a0 holds the hashtable address again
 	addiu $a0 $a0 8		# we move it so it points to the pointer of the contents.
 	lw $a0 ($a0)			# we de-reference it and get the pointer.
+	mul $v0 $v0 4			# converting to list length
 	addu $a0 $a0 $v0		# positioning ourselves in the list.
-	lw $a1 12($sp)			# we get the key in order to have: address of list, key and call buscar_elemento.
+	lw $a0 ($a0)			# getting the list address
+
+	lw $a1 -12($fp)		# we get the key in order to have: address of list, key and call buscar_elemento.
 	
 	jal HC_buscar_elemento
+	move $s2 $v0
 	bltz $v0 tab_buscar_NotFound
-	lw $a0 8($sp)			# reloading the address
+	lw $a0 -8($fp)			# reloading the address
 	addiu $a0 $a0 8
-	lw $a0 ($a0)			
-	addu $a0 $a0 $v0		# positioning ourselves in the list.
-	move $a1 $v0			# getting the index in $a1
+	lw $a0 ($a0)
+	mul $s1 $s1 4		
+	addu $a0 $a0 $s1		# positioning ourselves in the list.
+	lw $a0 ($a0)
+	move $a1 $s2			# getting the index in $a1
 	jal list_obtener
 	move $a0 $v0
 	jal Pair_fst
@@ -350,14 +357,14 @@ tab_insertar:
 	lw $a0 -8($fp)			# $a0 holds again the address of the hashtable
 	addiu $a0 $a0 4		# and now the address of the header.
 	lw $a0 ($a0)			# and now a pointer to the header.
-	jal get_hash_hash			# we get the position of the array that we need to look for.
+	jal get_hash_hash		# we get the position of the array that we need to look for.
 	move $a0 $a1			# now it holds the key
 	jalr $v0					# we hash it.
 	lw $a0 -8($fp)			# now $a0 holds the hashtable address again
 	addiu $a0 $a0 8		# we move it so it points to the pointer of the contents.
 	lw $a0 ($a0)			# we de-reference it and get the pointer.
+	mul $v0 $v0 4			# converting to words
 	addu $a0 $a0 $v0		# positioning ourselves in the list.
-	addi $a0 $a0 -1
 	lw $a0 ($a0)			# we de-reference the pointer in order to go to the list.
 	move $a1 $s2			# loading the element to insert.
 	jal list_insertar
@@ -381,3 +388,183 @@ tab_insertar:
 		lw $s2 -28($sp)
 		
 		jr $ra
+		
+## --- tab_destruir-- ##
+#
+# In params:
+#	$a0: Address of the hashtable object.
+#
+#
+# Out params: <NONE>
+#
+# Method vars: <NONE>
+#
+# Side Effects: 
+#	The hashTable is destroyed
+#
+# Example:
+#
+## --- End plan --- ##
+tab_destruir:
+	# Prologue
+	sw $fp 0($sp)
+	sw $ra -4($sp)
+	sw $a0 -8($sp)
+	sw $a1 -12($sp)
+	sw $a2 -16($sp)
+	sw $s0 -20($sp)
+	sw $s1 -24($sp)
+	sw $s2 -28($sp)
+	move $fp $sp
+	addiu $sp $sp -32
+	
+	lw $a0 4($a0)		# loading the pointer to the head like structure.
+	jal get_number_part_hash
+	move $s0 $v0		# saving the number of partitions.
+	
+	# now we proceed to destroy it. 
+	lw $a0 ($a0)
+	li $a1 0
+	sw $a1 ($a0)	# erasing the address field
+	sw $a1 4($a0)	# erasing the comp field
+	sw $a1 8($a0)	# erasing  the hash field
+	sw $a1 12($a0)	# erasing the partition field
+	sw $a1 16($a0) # erasing the print field
+	
+	
+	lw $a0 -8($fp)		# loading the address again
+	sw $a1 4($a0)		# werasing the pointer to the head.
+	lw $a0 8($a0)		# stepping into the strucutre.
+	move $s1 $a0
+	
+	
+	tab_destruir_loop: 
+		beqz $s0 tab_destruir_end
+		lw $a0 ($a0) 
+		jal list_destruir
+		li $a0 0
+		sw $a0 ($s1) 
+		addiu $s1 $s1 4
+		move $a0 $s1
+		addi $s0 $s0 -1
+		j tab_destruir_loop
+	
+	tab_destruir_end:
+		lw $a0 -8($fp)		# loading the address again
+		sw $s0 8($a0)
+		# Epilogue
+		addiu $sp $sp 32
+		lw $fp 0($sp)
+		lw $ra -4($sp)
+		lw $a0 -8($sp)
+		lw $a1 -12($sp)
+		lw $a2 -16($sp)
+		lw $s0 -20($sp)
+		lw $s1 -24($sp)
+		lw $s2 -28($sp)
+		
+		jr $ra
+		
+		
+tab_rehash:
+	# Prologue
+	sw $fp 0($sp)
+	sw $ra -4($sp)
+	sw $a0 -8($sp)
+	sw $a1 -12($sp)
+	sw $a2 -16($sp)
+	sw $s0 -20($sp)
+	sw $s1 -24($sp)
+	sw $s2 -28($sp)
+	sw $s3 -32($sp)
+	sw $s4 -36($sp)
+	sw $s5 -40($sp)
+	move $fp $sp
+	addiu $sp $sp -44
+	
+	
+	move $s0 $a0		# $s0 holds the old hashtable
+	move $s1 $a1		# $s1 holds the new partitions.
+	addi $a0 $a0 4
+	lw $a0 ($a0)		# now $a0 holds the head.
+	
+	jal get_comp_hash
+	move $a1 $v0		# $a1 holds the new compare function.
+	
+	jal get_hash_hash
+	move $a2 $v0		# $a2 holds the new hash function.
+	
+	jal get_number_part_hash
+	
+	move $s3 $v0		# now $s3 holds the old partitions.
+	
+	move $a0 $s1		# now $a0 holds the new partitions
+	
+	blt $a0 $s3 tab_rehash_error
+	
+	jal tab_crear
+	
+	move $s2 $v1		# $s2 holds the address of the new table.
+	
+	lw $a0 -8($fp)		# $a0 points to the old hashtable
+	
+	addi $a0 $a0 8
+	lw $a0 ($a0)		# now $a0 points to it's contents.
+	
+	move $s4 $a0
+	
+	move $s5 $s2		# $s5 stores the new hashtable address
+	addiu $s2 $s2 8
+	lw $s2 ($s2)		# now $s2 points to the contents of the new hashtable.
+	li $a1 0
+	
+	tab_rehash_array_loop:
+		beqz $s3	tab_rehash_end
+		lw $a0 ($s4)		# $a0 now points to the list.
+		sw $a0 ($s2)		# $s2 now holds the list.
+		sw $a1 ($s4)		# we erase the list from the old Hashtable
+		addiu $s4 $s4 4
+		addiu $s2 $s2 4
+		addi $s3 $s3 -1
+		j tab_rehash_array_loop
+	
+	tab_rehash_error:
+		li $v0 -5
+		li $v1 0
+		j tab_rehash_error_end
+	
+	tab_rehash_end:
+		lw $a0 -8($fp)
+		jal tab_destruir
+		li $v0 0
+		lw $a0 -8($fp)
+		sw $s5 ($a0)
+		addi $a1 $s5 4
+		lw $a1 ($s5)
+		sw $a1 4($a0)
+		addi $a1 $s5 8
+		lw $a1 ($s5)
+		sw $a1 8($a0)
+		tab_rehash_error_end:
+		# Epilogue
+		addiu $sp $sp 44
+		lw $fp 0($sp)
+		lw $ra -4($sp)
+		lw $a0 -8($sp)
+		lw $a1 -12($sp)
+		lw $a2 -16($sp)
+		lw $s0 -20($sp)
+		lw $s1 -24($sp)
+		lw $s2 -28($sp)
+		lw $s3 -32($sp)
+		lw $s4 -36($sp)
+		lw $s5 -40($sp)
+		
+		jr $ra
+	
+	
+	
+	
+	
+	
+	
