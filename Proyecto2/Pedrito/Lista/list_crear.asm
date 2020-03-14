@@ -20,8 +20,10 @@
 #	~Direccion header
 #	~Direccion cola/ultimo elemento
 #	~Direccion Primer elemento
-
 #
+
+.text
+
 list_crear:
 	# EPILOGUE
 	sw	$fp, 0($sp)

@@ -1,7 +1,13 @@
 
 #$a0 es la dir de la lista
 
+# $t0 es la direccion al antepenultimo
+# $t1 es un auxiliar
+# $t2 es el tamano de la lista
+
 # Hay que hacer caso vacio/plus caso solo uno
+
+.text
 
 list_pop:
 	# PROLOGUE
@@ -9,6 +15,10 @@ list_pop:
 	move	$fp, $sp
 	addi	$sp, $sp, -8
 	sw	$ra, 4($sp)
+	
+	# If the list is already empty, do nothing
+	lw	$t2, 4($a0)
+	beqz	$t2, list_pop_exit
 	
 	lw	$t0, 8($a0)	# We load list last element address
 	lw	$t0, 8($t0)	# We load list last element previous address
@@ -20,7 +30,7 @@ list_pop:
 	
 update_tail:
 	# We update list size
-	lw	$t2, 4($a0)
+	
 	addi	$t2, $t2, -1
 	sw	$t2, 4($a0)
 	

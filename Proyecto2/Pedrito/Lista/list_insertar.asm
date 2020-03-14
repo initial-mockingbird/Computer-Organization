@@ -14,7 +14,9 @@
 #	$v0: toInsert NODE address
 #	$t1: HEADER address
 #	$t2: Previous FIRST address
-	
+
+.text
+
 list_push:
 	# PROLOGUE
 	sw	$fp, 0($sp)
