@@ -5,7 +5,7 @@ transmitter_control: .word 0xffff0008
 reciever_control: .word 0xffff0000
 transmitter_data: .word 0xffff000c
 reciever_data: .word 0xffff0004
-V:	.word 
+V:	.word 2000
 N: .word 20
 M: .word 5
 S: .word 5
@@ -26,6 +26,6 @@ prev_movement: .word
 
 
 .globl transmitter_control, reciever_control, transmitter_data,reciever_data, N,M,manzana,cuerpo,cabeza,pared,coord_manzana,puntaje,
-.globl siguiente, S, aux
+.globl siguiente, S, V
 
 .globl prev_movement

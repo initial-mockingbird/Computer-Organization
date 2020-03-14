@@ -170,8 +170,6 @@ ok_pc:
 
 interrupts:
 
-la $a0 aux
-jalr $a0
 mfc0 $a0 $13
 srl $a0 $a0 15
 andi $a0 0x1
@@ -182,7 +180,9 @@ mfc0 $a0 $13
 srl $a0 $a0 8
 andi $a0 1
 bgtz $a0 reciever_event
+nop
 
+j ret_interrupt
 
 timer_event:
 
@@ -197,7 +197,7 @@ timer_event:
 		lw $a0 transmitter_control
 		lw $a0 ($a0)
 		beqz $a0 ready_print
-		
+		nop
 	
 		j end_timer
 		nop
@@ -220,7 +220,7 @@ ret:
 				# (Need to handle delayed branch case here)
 	mtc0 $k0 $14
 
-
+ret_interrupt:
 # Restore registers and reset procesor state
 #
 	lw $v0 s1		# Restore other registers
@@ -281,8 +281,7 @@ __start:
 	# por ejemplo:
 	
 	####################
-	
-	li $a0 5
+	lw $a0 V 
 	mtc0 $a0 $11			#timer event configure
 	li $a0 0
 	mtc0 $a0 $9
@@ -309,4 +308,5 @@ __start:
 	syscall			# syscall 10 (exit)
 
 __eoth:
+
 
