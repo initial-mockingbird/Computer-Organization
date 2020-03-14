@@ -118,10 +118,6 @@ sw $t1 t1
 sw $t2 t2
 sw $t3 t3
 #############################################
-# simulating a stack
-lw $sp sp
-
-#############################################
 	mfc0 $k0 $13		# Cause register
 	srl $a0 $k0 2		# Extract ExcCode Field
 	andi $a0 $a0 0x1f
@@ -193,6 +189,177 @@ timer_event:
 	la $a0 __timer_
 	syscall
 	
+	la $s0 coord_cabeza
+	lw $s1 4($a0)     		# s1 holds the y coordinate of the head.
+	lw $s0 ($s0)				# s0 holds the x coordinate of the head.
+	lw $t0 coord_manzana		# t0 holds the x coordinate of the apple.
+	lw $t1 coord_manzana+4	# t1 holds the y coordinate of the apple.
+	bne $s0 $t0 colisiones	# modify to pasadizo when doing the extra level
+	nop
+	bne $s1 $t1 colisiones	# modify to pasadizo when doing the extra level
+	nop
+	
+	
+	##########################################################
+	#																			#
+	# Apple segment														#
+	#																			#
+	##########################################################
+	
+	# --- Increising the highscore --- #
+	lw $a0 puntaje
+	addi $a0 $a0 1
+	sw $a0 puntaje
+	
+	# --- Generating coordinates --- #
+	gen_apple:
+	#--x--#
+	
+	li $v0 42
+	lw $a1 N
+	addi $a1 $a1 -2
+	syscall
+	addi $a0 $a0 1
+	move $v1 $a0
+	move $a2 $v1
+	
+	#--y--#
+	li $v0 42
+	lw $a1 M
+	addi $a1 $a1 -2
+	syscall
+	addi $a0 $a0 1
+	move $a3 $a0
+	
+	# --- Wall collision verification --- #
+	
+	# due to the way that we generate the apple we only have to look for
+	# innter wall collisions.
+	lw $t0 p_int_size
+	li $t1 0
+	
+	chequeado_interno:
+	lw $t2 paredes_internas($t1)		# t2 holds the x coordinate of the inner wall
+	addi $t1 $t1 4
+	lw $t3 paredes_internas($t1) 
+	bne $t2 $a2 sig_int
+	nop
+	bne $t3 $a3 sig_int
+	nop
+	j gen_apple
+	nop
+	
+	
+	# --- Pending! snek collision verification --- #
+	
+	
+	
+	sig_int:
+	addi $t1 $t1 4
+	blt $t1 $t0 chequeado_interno
+	nop
+	
+	# --- Storing the coordinate in the apple position label --- #
+	la $a0 coord_manzana
+	sw $a2 ($a0)
+	sw $a3 4($a0)
+	# --- Displaying  --- #
+	manzana_set_pos:
+		
+		
+		# setting the position
+		sll $a2 $a2 12
+		or $a2 $a2 $a3
+		sll $a2 $a2 8
+		ori $a2 $a2 0x7
+		
+		lw $a0 transmitter_control
+		lw $a0 ($a0)
+		beqz $a0 manzana_set_pos
+		nop
+		lw $a0 transmitter_data
+		sw $a2 ($a0)
+		
+	manzana_print_pos:
+		lw $a1 manzana
+		lw $a0 transmitter_control
+		lw $a0 ($a0)
+		beqz $a0 manzana_print_pos
+		nop
+		lw $a0 transmitter_data
+		sw $a1 ($a0)
+	
+	j end_timer
+	nop
+
+	
+	##########################################################
+	#																			#
+	# Collission segment segment										#
+	#																			#
+	##########################################################
+	
+	colisiones:
+	
+	beqz $s0 colision_detectada
+	nop
+	beqz $s1 colision_detectada
+	nop
+	lw $t0 N
+	beq $s0 $t0 colision_detectada
+	nop
+	lw $t0 M
+	beq $s1 $t0 colision_detectada
+	nop
+	
+	
+	lw $t0 p_int_size
+	li $t1 0
+	
+	colision_interna:
+	lw $t2 paredes_internas($t1)		# t2 holds the x coordinate of the inner wall
+	addi $t1 $t1 4
+	lw $t3 paredes_internas($t1) 
+	bne $t2 $s0 sig_int
+	nop
+	bne $t3 $s1 sig_int
+	nop
+	j colision_detectada
+	nop
+	
+	
+	sig_int:
+	addi $t1 $t1 4
+	blt $t1 $t0 colision_interna
+	nop
+	
+	
+	# if there is no collisions go back to the timer and print the snek.
+	
+	
+	
+	colision_interna:
+	li $v0 4
+	la $a0 __loose_
+	syscall
+	nop
+	li $a0 0
+	mtc0 $a0 $11
+	mtc0 $a0 $12
+	mtc0 $a0 $13
+	j ret
+	nop
+	
+	
+	
+	
+	
+	###########################################################################################
+	borrar_cola:
+	
+	
+	dibujar_cabeza:
+	
 	ready_print:
 		lw $a0 transmitter_control
 		lw $a0 ($a0)
@@ -208,6 +375,95 @@ timer_event:
 			nop
 
 reciever_event:
+	
+	lw $a0 reciever_data
+	lw $a0 ($a0)				# $a0 holds the key
+	
+	
+	beq $a0 0x70 k_pause
+	nop
+	beq $a0 0x71 k_quits
+	nop
+	beq $a0 0x77 w_action
+	nop
+	beq $a0 0x61 a_action
+	nop
+	beq $a0 0x73 s_action
+	nop
+	beq $a0 0x64 d_action
+	nop
+	j k_end
+	nop
+	
+	w_action:
+
+	lw $a0  prev_movement
+	la $a1  s_movement
+	beq $a0 $a1 k_end
+	nop
+	lw $a1 w_movement
+	sw $a1 prev_movement
+	j k_end
+	nop
+	
+	a_action:
+
+	lw $a0  prev_movement
+	la $a1  d_movement
+	beq $a0 $a1 k_end
+	nop
+	lw $a1 a_movement
+	sw $a1 prev_movement
+	j k_end
+	nop
+
+	s_acttion:
+
+	lw $a0  prev_movement
+	la $a1  w_movement
+	beq $a0 $a1 k_end
+	nop
+	lw $a1 s_movement
+	sw $a1 prev_movement
+	j k_end
+	nop
+
+	d_action:
+
+	lw $a0  prev_movement
+	la $a1  a_movement
+	beq $a0 $a1 k_end
+	nop
+	lw $a1 d_movement
+	sw $a1 prev_movement
+	j k_end
+	nop
+	
+	k_pause:
+	mfc0 $a0 $11
+	beqz $a0 reanudar
+	nop
+	li $a0 0
+	mtc0 $a0 $11
+	j k_end
+	nop
+	reanudar:
+	lw $a0 V
+	mtc0 $a0 $11
+	j k_end
+	nop
+	
+	k_quits:
+	li $a0 0
+	mtc0 $a0 $11
+	mtc0 $a0 $12
+	mtc0 $a0 $13
+	j k_end
+	nop
+	
+	k_end:
+	j interrupts
+	nop
 	
 
 
