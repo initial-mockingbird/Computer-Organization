@@ -22,8 +22,13 @@ snek_push:
 	#PROLOGO
 	sw	$fp, 0($sp)
 	sw	$ra, -4($sp)
+	sw	$s0, -8($sp)
+	sw	$s1, -12($sp)
+	sw	$s2, -16($sp)
+	sw	$s3, -20($sp)
+	sw	$s7, -24($sp)
 	move	$fp, $sp
-	addiu	$sp, $sp, -8
+	addiu	$sp, $sp, -26
 	
 	# hasta 0, ahi paras maldito mmguevo
 	lw	$s1, 8($a0)
@@ -83,7 +88,12 @@ exit_snek_push:
 	move	$sp, $fp
 	lw	$fp, 0($sp)
 	lw	$ra, -4($sp)
-	
+	lw	$s0, -8($sp)
+	lw	$s1, -12($sp)
+	lw	$s2, -16($sp)
+	lw	$s3, -20($sp)
+	lw	$s7, -24($sp)
+		
 	jr	$ra
 	
 #INCLUDES NECESARIOS
