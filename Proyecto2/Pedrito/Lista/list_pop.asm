@@ -1,11 +1,23 @@
-
+## --- Plan list_obtener --- ##
+#
+# In Params:
+#	$a0: List address (Header address)
+#
+# Out Params:
+#	$v0: Last element in list address
+#
+# Method Variables:
+#	$t0: (Previous to last node in list) address
+#	$t1: Aux Var
+#	$t2: List size
+#	
+# Side Effects: <NONE>
+#
+## --- End Plan --- ##
 #$a0 es la dir de la lista
 
-# $t0 es la direccion al antepenultimo
-# $t1 es un auxiliar
-# $t2 es el tamano de la lista
-
-# Hay que hacer caso vacio/plus caso solo uno
+# TODO:
+# [X] Hay que hacer caso vacio/plus caso solo uno
 
 .text
 
@@ -17,12 +29,13 @@ list_pop:
 	sw	$ra, 4($sp)
 	
 	# If the list is already empty, do nothing
-	lw	$t2, 4($a0)
+	lw	$t2, 4($a0)	# We load list size
 	beqz	$t2, list_pop_exit
 	
 	lw	$t0, 8($a0)	# We load list last element address
 	lw	$t0, 8($t0)	# We load list last element previous address
 	
+	lw	$v0, 4($t0)	# We load last element value to return before popping 
 	# We set (previous to last).next element to NIL/-1
 	li	$t1, -1
 	sw	$t1, 12($t0)

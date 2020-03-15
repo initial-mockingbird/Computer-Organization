@@ -28,40 +28,7 @@
 
 #.globl matrix_create
 .text
-main:
-	li	$a0, 4
-	li	$a1, 4
-	jal	matrix_create
-	
-	move	$t9, $v0 # dir header
-	move	$a0, $v0
-	li	$a1, 0
-	li	$a2, 0
-	li	$a3, 65
-	jal	matrix_insert
-	
-	li	$a1, 1
-	li	$a2, 1
-	li	$a3, 65
-	jal	matrix_insert
-	
-	li	$a1, 2
-	li	$a2, 2
-	li	$a3, 65
-	jal	matrix_insert
-	
-	li	$a1, 3
-	li	$a2, 3
-	li	$a3, 65
-	jal	matrix_insert
-	
-	li	$a1, 4
-	li	$a2, 4
-	li	$a3, 65
-	jal	matrix_insert
-	li 	$v0, 10
-	syscall
-	
+
 matrix_create:
 	#Prologue
 	sw	$fp, 0($sp)

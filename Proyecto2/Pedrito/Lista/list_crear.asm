@@ -1,16 +1,16 @@
-## --- Plan list_crear --- ##
+## --- Plan snek_crear --- ##
 #
-# In Params: <NONE>
+# In Params:
+#	$a0: Snek MAX SIZE
 #
 # Out Params:
-#	$v0: Operation ending code (-1 faulty execution/0 successfull execution)
-#	$v1: List address
+#	$v0: Snek HEADER address
 #
 # Method Variables:
-#	$t0: Temp HEADER next element address storage/Temp comparison method address storage
+#	$t0: 
 #	
 # Side Effects
-#	An empty list consisting only of its HEADER is created in memory.
+#	
 #
 ## --- End Plan --- ##
 
@@ -18,8 +18,8 @@
 # PRIMERO LLEVA UNA CABEZA QUE CONTIENE:
 #
 #	~Direccion header
+#	~TAmano
 #	~Direccion cola/ultimo elemento
-#	~Direccion Primer elemento
 #
 
 .text

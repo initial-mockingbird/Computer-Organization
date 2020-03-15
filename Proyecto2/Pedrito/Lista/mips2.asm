@@ -12,6 +12,10 @@
 	jal 	list_push
 	
 	move	$a0, $t6
+	li	$a1, 1
+	jal 	list_obtener
+	
+	move	$a0, $t6
 	jal	list_pop
 	move	$a0, $t6
 	jal	list_pop
@@ -21,4 +25,7 @@
 
 .include "list_crear.asm"
 .include "list_insertar.asm"
+.include "list_destruir.asm"
+.include "list_longitud.asm"
+.include "list_obtener.asm"
 .include "list_pop.asm"
