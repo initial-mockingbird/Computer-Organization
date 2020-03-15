@@ -188,192 +188,9 @@ timer_event:
 	li $v0 4
 	la $a0 __timer_
 	syscall
+	li $a0 1
+	sw $a0 timer_activated
 	
-	la $s0 coord_cabeza
-	lw $s1 4($a0)     		# s1 holds the y coordinate of the head.
-	lw $s0 ($s0)				# s0 holds the x coordinate of the head.
-	lw $t0 coord_manzana		# t0 holds the x coordinate of the apple.
-	lw $t1 coord_manzana+4	# t1 holds the y coordinate of the apple.
-	bne $s0 $t0 colisiones	# modify to pasadizo when doing the extra level
-	nop
-	bne $s1 $t1 colisiones	# modify to pasadizo when doing the extra level
-	nop
-	
-	
-	##########################################################
-	#																			#
-	# Apple segment														#
-	#																			#
-	##########################################################
-	
-	# --- Increising the highscore --- #
-	lw $a0 puntaje
-	addi $a0 $a0 1
-	sw $a0 puntaje
-	
-	# --- Generating coordinates --- #
-	gen_apple:
-	#--x--#
-	
-	li $v0 42
-	lw $a1 N
-	addi $a1 $a1 -2
-	syscall
-	addi $a0 $a0 1
-	move $v1 $a0
-	move $a2 $v1
-	
-	#--y--#
-	li $v0 42
-	lw $a1 M
-	addi $a1 $a1 -2
-	syscall
-	addi $a0 $a0 1
-	move $a3 $a0
-	
-	# --- Wall collision verification --- #
-	
-	# due to the way that we generate the apple we only have to look for
-	# innter wall collisions.
-	lw $t0 p_int_size
-	li $t1 0
-	
-	chequeado_interno:
-	lw $t2 paredes_internas($t1)		# t2 holds the x coordinate of the inner wall
-	addi $t1 $t1 4
-	lw $t3 paredes_internas($t1) 
-	bne $t2 $a2 sig_int
-	nop
-	bne $t3 $a3 sig_int
-	nop
-	j gen_apple
-	nop
-	
-	
-	# --- Pending! snek collision verification --- #
-	
-	
-	
-	sig_int:
-	addi $t1 $t1 4
-	blt $t1 $t0 chequeado_interno
-	nop
-	
-	# --- Storing the coordinate in the apple position label --- #
-	la $a0 coord_manzana
-	sw $a2 ($a0)
-	sw $a3 4($a0)
-	# --- Displaying  --- #
-	manzana_set_pos:
-		
-		
-		# setting the position
-		sll $a2 $a2 12
-		or $a2 $a2 $a3
-		sll $a2 $a2 8
-		ori $a2 $a2 0x7
-		
-		lw $a0 transmitter_control
-		lw $a0 ($a0)
-		beqz $a0 manzana_set_pos
-		nop
-		lw $a0 transmitter_data
-		sw $a2 ($a0)
-		
-	manzana_print_pos:
-		lw $a1 manzana
-		lw $a0 transmitter_control
-		lw $a0 ($a0)
-		beqz $a0 manzana_print_pos
-		nop
-		lw $a0 transmitter_data
-		sw $a1 ($a0)
-	
-	j end_timer
-	nop
-
-	
-	##########################################################
-	#																			#
-	# Collission segment segment										#
-	#																			#
-	##########################################################
-	
-	colisiones:
-	
-	beqz $s0 colision_detectada
-	nop
-	beqz $s1 colision_detectada
-	nop
-	lw $t0 N
-	beq $s0 $t0 colision_detectada
-	nop
-	lw $t0 M
-	beq $s1 $t0 colision_detectada
-	nop
-	
-	
-	lw $t0 p_int_size
-	li $t1 0
-	
-	colision_interna:
-	lw $t2 paredes_internas($t1)		# t2 holds the x coordinate of the inner wall
-	addi $t1 $t1 4
-	lw $t3 paredes_internas($t1) 
-	bne $t2 $s0 sig_int
-	nop
-	bne $t3 $s1 sig_int
-	nop
-	j colision_detectada
-	nop
-	
-	
-	sig_int:
-	addi $t1 $t1 4
-	blt $t1 $t0 colision_interna
-	nop
-	
-	
-	# if there is no collisions go back to the timer and print the snek.
-	
-	
-	
-	colision_interna:
-	li $v0 4
-	la $a0 __loose_
-	syscall
-	nop
-	li $a0 0
-	mtc0 $a0 $11
-	mtc0 $a0 $12
-	mtc0 $a0 $13
-	j ret
-	nop
-	
-	
-	
-	
-	
-	###########################################################################################
-	borrar_cola:
-	
-	
-	dibujar_cabeza:
-	
-	ready_print:
-		lw $a0 transmitter_control
-		lw $a0 ($a0)
-		beqz $a0 ready_print
-		nop
-	
-		j end_timer
-		nop
-
-		end_timer:
-			mtc0 $zero $9
-			j interrupts
-			nop
-
 reciever_event:
 	
 	lw $a0 reciever_data
@@ -417,7 +234,7 @@ reciever_event:
 	j k_end
 	nop
 
-	s_acttion:
+	s_action:
 
 	lw $a0  prev_movement
 	la $a1  w_movement
@@ -439,6 +256,10 @@ reciever_event:
 	j k_end
 	nop
 	
+	##########################
+	#
+	# Possible bug: abusing of the p in order to get free time to think as in tetris.
+	#
 	k_pause:
 	mfc0 $a0 $11
 	beqz $a0 reanudar
@@ -458,6 +279,8 @@ reciever_event:
 	mtc0 $a0 $11
 	mtc0 $a0 $12
 	mtc0 $a0 $13
+	li $a0 -1
+	sw $a0 timer
 	j k_end
 	nop
 	
@@ -550,13 +373,127 @@ __start:
 	lw $a0 ($a1)		
 	ori $a0 $a0 0x2 		
 	sw $a0 ($a1)					#enable reciever
+
+	jal inicio
+	nop
 	
+	game_loop: 
+	
+	lw $t0 timer
+	beqz $t0 game_loop
+	nop
+	beq $t0 -1 program
+	nop
+	
+	sw $zero timer		
+	mtc0 $zero $11			
+					
+	la $s0 coord_cabeza
+	lw $s1 4($a0)     		# s1 holds the y coordinate of the head.
+	lw $s0 ($s0)				# s0 holds the x coordinate of the head.
+	
+	lw $s2 prev_movement
+	move $a0 $s0
+	move $a1 $s1
+	jalr $s2					
+	nop
+													
+	move $s2 $v0				# s2 holds the new x coordinate of the head.
+	move $s3 $v1				# s3 holds the new y coordinate of the head.
+	
+	
+	lw $a0 map 
+	move $a1 $v0
+	move $a2 $v1
+	jal matriz_obtener		# getting the char at the new head position.
+	
+	lw $t0 pared
+	beq $v0 $t0 perdicion	# if it's wall, then toca la moricion.
+	nop
+	lw $t0 cuerpo
+	beq $v0 $t0 perdicion	# if it's body, certain doom.
+	nop
+	lw $t0 manzana
+	beq $v0 $t0 NOMNOM		# BUT IF IT'S APPLE, THEN OUROBOROS IS SOON TO BE BORN.
+	nop
+		
+	j pop							# just move.
+	nop	
+	
+	perdicion:
+	li $v0 4
+	la $a0 __loose_
+	syscall
+	nop
+	li $a0 0
+	mtc0 $a0 $11
+	mtc0 $a0 $12					
+	j program																			
+	nop
+	
+	
+	NOMNOM:
+	jal bad_apple			# PENDIENTE, si se genera primero la manzana y luego se mueve la cabeza
+	nop						# existe la posibilidad de que la manzana que se genere sea justo en frente de la serpiente
+								# lo cual no se si seria un feature o no.
+	j movement
+	nop
+	
+	pop:
+	
+	
+	movement:
+	
+	move $a3 $a2
+	move $a2 $a1 
+	move $a1 $a0
+	lw $a0 map
+	jal matrix_insert			# replacing old head with body in matrix.
+	
+	move $a0 $s0
+	move $a1 $s1
+	lw $a2 cuerpo				# replacing old head with body in the screen.
+	jal display
+	nop
+	
+	
+	
+	lw $a0 map
+	move $a1 $s2
+	move $a2 $s3
+	lw $a3 cabeza
+	jal matrix_insert			# inserting new head in the matrix
+	nop
+	
+	move $a0 $s2
+	move $a1 $s3
+	lw $a3 cabeza
+	jal display					# printing new head in the matrix
+	nop
+	
+	move $a0 $s2
+	move $a1 $s3
+	jal Pair
+	nop
+	move $a1 $v1
+	lw $a0 snek
+	jal list_push	# inserting in the snek structure.
+	nop 
+	
+	
+	
+	game_loop_end:
+	j game_loop
+	nop
+																												
+
+	program:
 	lw $a0 0($sp)			# argc
 	addiu $a1 $sp 4		# argv
 	addiu $a2 $a1 4		# envp
 	sll $v0 $a0 2
 	addu $a2 $a2 $v0
-	
+
 	jal main
 	nop
 
