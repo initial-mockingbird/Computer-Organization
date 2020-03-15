@@ -25,6 +25,22 @@ main:
 	
 	jal	snek_push
 	
+	move	$a0, $s0
+	
+	jal	snek_pop
+	
+	move	$a0, $s0
+	
+	jal	snek_pop
+	
+	move	$a0, $s0
+	
+	jal	snek_pop
+	
+	move	$a0, $s0
+	
+	jal	snek_pop
+	
 	li	$v0, 10
 	syscall
 
@@ -34,3 +50,4 @@ main:
 .include "snek_push.asm"
 .include "snek_obtener.asm"
 .include "snek_insertar.asm"
+.include "snek_pop.asm"
