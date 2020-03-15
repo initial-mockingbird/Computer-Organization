@@ -14,8 +14,8 @@
 ## --- End plan --- ##
 	bad_apple:
 	#prologue
-	sw $sp 0($sp)
-	sw $fp -4($sp)
+	sw $fp ($sp)
+	sw $ra -4($sp)
 	sw $s0 -8($sp)
 	sw $s1 -12($sp)
 	sw $a0 -16($sp)
@@ -56,8 +56,8 @@
 	sw $a0 coord_manzana+4
 	
 	lw $a0 map
-	move $a2 $a1
-	move $a2 $a3
+	lw $a1 coord_manzana
+	lw $a2 coord_manzana+4
 	jal matriz_obtener
 	lw $t0 pared
 	beq $t0 $v0 gen_apple
@@ -89,7 +89,8 @@
 	
 	#epilogue
 	addiu $sp $sp 44
-	lw $fp -4($sp)
+	lw $fp ($sp)
+	lw $ra -4($sp)
 	lw $s0 -8($sp)
 	lw $s1 -12($sp)
 	lw $a0 -16($sp)

@@ -360,10 +360,8 @@ __start:
 	# por ejemplo:
 	
 	####################
-	lw $a0 V 
-	mtc0 $a0 $11			#timer event configure
-	li $a0 0
-	mtc0 $a0 $9
+	#lw $a0 V
+	
 	
 	li $a0 0x0000ff11		#enable all interrupts
 	mtc0 $a0 $12
@@ -374,8 +372,15 @@ __start:
 	ori $a0 $a0 0x2 		
 	sw $a0 ($a1)					#enable reciever
 
+	
 	jal inicio
 	nop
+	
+	
+	li $a0 2000 
+	mtc0 $a0 $11			#timer event configure
+	li $a0 0
+	mtc0 $a0 $9
 	
 	game_loop: 
 	

@@ -2,13 +2,13 @@
 #
 # In Params:
 #	$a0: List address (Header address)
-#	$a1: Index of element to return
+#	$a1: Index of element to return (1 to SIZE)
 #
 # Out Params:
 #	$v0: Address of the element at the index
 #	$v1: Operation ending code (-1 faulty execution/0 successfull execution)
 #
-# Method Variables: <NONE>
+# Method Variables:
 #	$a0: Current element address
 #	$v0: Length of the list (just at the start)
 #	$a1: Counter

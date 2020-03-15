@@ -14,3 +14,8 @@
 .include "matrix_insert.asm"
 .include "matriz_obtener.asm"
 .include "bad_apple.asm"
+.include "snek_insertar.asm"
+.include "snek_obtener.asm"
+.include "snek_pop.asm"
+.include "snek_push.asm"
+.include "create_snek.asm"

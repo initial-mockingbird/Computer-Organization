@@ -3,36 +3,41 @@
 # In params:
 #	$a0: Game DIFFICULTY <NOT IMPLEMENTED>
 #	
-# Out params: <NONE>
-#	DEVOLVER DIRECCION HEADER SOBRETODO
+# Out params:
+#	$v0: Map Matrix HEADER
 #
-# Method vars: <NONE>
+# Method vars:
+#	$s0: HEADER address
+#	$s1: Iteration row
+#	$s2: Iteration column
+#	$s3: N-1
+#	$s4: M-1
 #
 # Side Effects: 
 #	A representation of the map is created in memory
-#
-# Example:
 #
 ## --- End plan --- ##
 
 .data 
 WALLS:	.byte '#'
-
+#N:	.word 8
+#M:	.word 16
 .text
 
 map_crear:
 	#PROLOGO
 	sw	$fp, 0($sp)
 	sw	$ra, -4($sp)
+	sw	$s0, -8($sp)
+	sw	$s1, -12($sp)
+	sw	$s2, -16($sp)
+	sw	$s3, -20($sp)
+	sw	$s4, -24($sp)
 	move	$fp, $sp
-	addiu	$sp, $sp, -8
+	addiu	$sp, $sp, -28
 	
 	lw	$a0, N
 	lw	$a1, M
-	
-	# Creamos una matriz que servira para representar el mapa
-	#lw	$t0, N
-	#lw	$t1, M
 	
 	# Guardamos registros necesarios proximamente
 	sw	$a0, 0($sp)
@@ -44,19 +49,14 @@ map_crear:
 	lw	$a0, 8($sp)
 	lw	$a1, 4($sp)
 	addiu	$sp, $sp, 8
+
 	
-	#
-	#S0 HEader address
-	#S1 Act row
-	#S2 act col
-	#S3 N
-	#S4 M-1
-	
-	move	$s0, $v0# Header Address
+	move	$s0, $v0	# Header Address
 	li	$s1, 0	# act row
 	li	$s2, 0	# act col
 	
 	move	$s3, $a0 #N/ROWS
+	addi	$s3, $s3, -1
 	move	$s4, $a1
 	addi	$s4, $s4, -1 # COL - 1
 	
@@ -64,7 +64,7 @@ map_crear:
 	
 row_loop:
 	beqz	$s1, in_col_loop
-	beq	$s1, $s4, in_col_loop
+	beq	$s1, $s3, in_col_loop
 	bge	$s1, $s3, exit_map_crear
 	
 	# Pared borde izq
@@ -73,33 +73,17 @@ row_loop:
 	li	$a2, 0
 	lb	$a3, WALLS
 	
-	# Guardamos $v0 y $a0 porsia
-	#sw	$v0, 0($sp)
-	#sw	$a0, 4($sp)
-	#addiu	$sp, $sp, -8
-	
 	jal 	matrix_insert
 	
-	#lw	$v0, 8($sp)
-	#lw	$a0, 4($sp)
-	#addiu	$sp, $sp, 8
-	
 	#Pared borde derecha
-	#move	$a0, $s2
-	#move	$a1, $s1
 	move	$a0, $s0
 	move	$a1, $s1
 	move	$a2, $s4
 	lb	$a3, WALLS
 	
-	# Guardamos $v0 porsia
-	#sw	$v0, 0($sp)
-	#addiu	$sp, $sp, -4
 	
 	jal 	matrix_insert
 	
-	#lw	$v0, 4($sp)
-	#addiu	$sp, $sp, 4
 	
 	addi	$s1, $s1, 1	# Aumentamos la fila en la que estamos
 	j	row_loop
@@ -123,12 +107,22 @@ col_loop:
 	j	row_loop
 
 exit_map_crear:
-	# HACER EPILOGO
+	move	$v0, $s0	# En caso de que $v0 haya sido reemplazado
+	# EPILOGO
 	move	$sp, $fp
 	lw	$fp, 0($sp)
-	lw	$ra, 4($sp)
+	lw	$ra, -4($sp)
+	lw	$s0, -8($sp)
+	lw	$s1, -12($sp)
+	lw	$s2, -16($sp)
+	lw	$s3, -20($sp)
+	lw	$s4, -24($sp)
 	
-	move	$v0, $s0
+	
 	
 	jr	$ra
 
+# INCLUDES NECESARIOS EN ALGUNA PARTE
+#.include "Matrix/matrix_HEADER.asm"
+#.include "Matrix/matrix_crear.asm"
+#.include "Matrix/matrix_insert.asm"

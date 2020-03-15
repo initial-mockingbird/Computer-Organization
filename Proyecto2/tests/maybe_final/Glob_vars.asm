@@ -6,9 +6,11 @@ reciever_control: .word 0xffff0000
 transmitter_data: .word 0xffff000c
 reciever_data: .word 0xffff0004
 V:	.word 2000
-N: .word 20
-M: .word 5
-S: .word 5
+#N: .word 12
+#M: .word 117
+N: .word 8
+M: .word 13
+S: .word 20	
 manzana: .word 0x40		# "@"
 cuerpo: .word 0x2A		# "*"
 cabeza: .word 0x4F		# "O"
@@ -17,13 +19,13 @@ coord_manzana: .space 8
 coord_cabeza:  .space 8
 puntaje: .word 0
 snek: .word 0
-map: .word
-timer: .word
+map: .word 0
+timer: .word 0
 # --- Script vars --- # 
 
 # Keyboard_event script vars:
 
-prev_movement: .word
+prev_movement: .word 0
 
 # Ingame Messages:
 

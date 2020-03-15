@@ -31,7 +31,7 @@ matriz_obtener:
 	addu	$t3, $t3, $a2
 	addu	$t2, $t2, $t3
 	
-	lw 	$v0, 0($t2)
+	lb 	$v0, 0($t2)
 	
 	#Epilogue
 	move	$sp, $fp
