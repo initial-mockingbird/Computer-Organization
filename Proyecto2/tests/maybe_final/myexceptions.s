@@ -474,7 +474,7 @@ __start:
 	
 	lw $a0 map
 	move $a1 $s5
-	move $a1 $s6
+	move $a2 $s6
 	li $a3 0
 	jal matrix_insert		# deleting tail from matrix.
 	nop

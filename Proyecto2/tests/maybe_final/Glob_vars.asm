@@ -5,7 +5,7 @@ transmitter_control: .word 0xffff0008
 reciever_control: .word 0xffff0000
 transmitter_data: .word 0xffff000c
 reciever_data: .word 0xffff0004
-V:	.word 1000
+V:	.word 500
 #N: .word 12
 #M: .word 117
 N: .word 8
