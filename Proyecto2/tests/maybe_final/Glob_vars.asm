@@ -8,8 +8,8 @@ reciever_data: .word 0xffff0004
 V:	.word 500
 #N: .word 12
 #M: .word 117
-N: .word 8
-M: .word 13
+N: .word 30
+M: .word 30
 S: .word 20	
 manzana: .word 0x40		# "@"
 cuerpo: .word 0x2A		# "*"

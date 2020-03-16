@@ -118,8 +118,6 @@ exit_map_crear:
 	lw	$s3, -20($sp)
 	lw	$s4, -24($sp)
 	
-	
-	
 	jr	$ra
 
 # INCLUDES NECESARIOS EN ALGUNA PARTE
