@@ -75,7 +75,7 @@ s_movement:
 	move $fp $sp
 	addi $sp $sp -4
 	
-	move $v1 $a0
+	move $v1 $a1
 	addi $v0 $a0 1
 	
 	 #epilogue
@@ -90,7 +90,7 @@ w_movement:
 	move $fp $sp
 	addi $sp $sp -4
 	
-	move $v1 $a0
+	move $v1 $a1
 	addi $v0 $a0 -1
 	
 	 #epilogue
