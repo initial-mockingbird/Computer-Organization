@@ -5,7 +5,7 @@ transmitter_control: .word 0xffff0008
 reciever_control: .word 0xffff0000
 transmitter_data: .word 0xffff000c
 reciever_data: .word 0xffff0004
-V:	.word 2000
+V:	.word 1000
 #N: .word 12
 #M: .word 117
 N: .word 8
@@ -17,7 +17,7 @@ cabeza: .word 0x4F		# "O"
 pared: .word 0x23			# "#"
 coord_manzana: .space 8
 coord_cabeza:  .space 8
-puntaje: .word 0
+puntaje: .word -1
 snek: .word 0
 map: .word 0
 timer: .word 0
@@ -40,63 +40,60 @@ __loose_: .asciiz "Has muerto :C"
 
 .text
 
-w_movement:
+a_movement:
 	#prologue
-	sw $sp ($sp)
-	sw $fp -4($fp)
+	sw $fp ($sp)
 	move $fp $sp
-	addi $sp $sp -8
+	addi $sp $sp -4
+	
 	
 	move $v0 $a0
 	addi $v1 $a1 -1
 	
 	 #epilogue
-	addi $sp $sp 8
-	lw $fp -4($fp)
+	addi $sp $sp 4
+	lw $fp -4($sp)
 	jr $ra
 
-s_movement:
+d_movement:
 	#prologue
-	sw $sp ($sp)
-	sw $fp -4($fp)
+	sw $fp ($sp)
 	move $fp $sp
-	addi $sp $sp -8
+	addi $sp $sp -4
 	
 	move $v0 $a0
 	addi $v1 $a1 1
 	
 	 #epilogue
-	addi $sp $sp 8
-	lw $fp -4($fp)
+	addi $sp $sp 4
+	lw $fp -4($sp)
 	jr $ra
 
-d_movement:
+s_movement:
 	#prologue
-	sw $sp ($sp)
-	sw $fp -4($fp)
+	sw $fp ($sp)
 	move $fp $sp
-	addi $sp $sp -8
+	addi $sp $sp -4
 	
 	move $v1 $a0
 	addi $v0 $a0 1
 	
 	 #epilogue
-	addi $sp $sp 8
-	lw $fp -4($fp)
+	addi $sp $sp 4
+	lw $fp -4($sp)
 	jr $ra
 	
 
-a_movement:
+w_movement:
 	#prologue
-	sw $sp ($sp)
-	sw $fp -4($fp)
+	sw $fp ($sp)
 	move $fp $sp
-	addi $sp $sp -8
+	addi $sp $sp -4
 	
 	move $v1 $a0
 	addi $v0 $a0 -1
 	
 	 #epilogue
-	addi $sp $sp 8
-	lw $fp -4($fp)
+	addi $sp $sp 4
+	lw $fp -4($sp)
 	jr $ra

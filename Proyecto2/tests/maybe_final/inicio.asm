@@ -115,6 +115,11 @@ inicio:
 	
 	li $a0 5 
 	li $a1 5
+	sw $a0 coord_cabeza
+	sw $a1 coord_cabeza+4
+	
+	li $a0 5 
+	li $a1 5
 	jal Pair
 	
 	lw $a0 snek
@@ -122,7 +127,7 @@ inicio:
 	jal snek_push
 	####################
 	#Loading movement direction.
-	la $a0 w_movement
+	la $a0 d_movement
 	sw $a0 prev_movement
 	
 	

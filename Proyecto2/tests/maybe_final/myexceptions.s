@@ -104,6 +104,8 @@ stack: .word 0x8FFFFFFF
 	sw $v0 s1		# Not re-entrant and we can't trust $sp
 	sw $a0 s2		# But we need to use these registers
 
+
+SOS:
 ######## saving the other registers #########
 sw $sp sp
 sw $fp fp
@@ -190,7 +192,8 @@ timer_event:
 	syscall
 	li $a0 1
 	sw $a0 timer
-	
+	j interrupts
+	nop
 reciever_event:
 	
 	lw $a0 reciever_data
@@ -218,7 +221,7 @@ reciever_event:
 	la $a1  s_movement
 	beq $a0 $a1 k_end
 	nop
-	lw $a1 w_movement
+	la $a1 w_movement
 	sw $a1 prev_movement
 	j k_end
 	nop
@@ -229,7 +232,7 @@ reciever_event:
 	la $a1  d_movement
 	beq $a0 $a1 k_end
 	nop
-	lw $a1 a_movement
+	la $a1 a_movement
 	sw $a1 prev_movement
 	j k_end
 	nop
@@ -240,7 +243,7 @@ reciever_event:
 	la $a1  w_movement
 	beq $a0 $a1 k_end
 	nop
-	lw $a1 s_movement
+	la $a1 s_movement
 	sw $a1 prev_movement
 	j k_end
 	nop
@@ -251,7 +254,7 @@ reciever_event:
 	la $a1  a_movement
 	beq $a0 $a1 k_end
 	nop
-	lw $a1 d_movement
+	la $a1 d_movement
 	sw $a1 prev_movement
 	j k_end
 	nop
@@ -271,6 +274,8 @@ reciever_event:
 	reanudar:
 	lw $a0 V
 	mtc0 $a0 $11
+	li $a0 0
+	mtc0 $a0 $9
 	j k_end
 	nop
 	
@@ -285,6 +290,9 @@ reciever_event:
 	nop
 	
 	k_end:
+	mfc0 $a0 $13
+	andi $a0 0xE00
+	mtc0 $a0 $13
 	j interrupts
 	nop
 	
@@ -377,7 +385,7 @@ __start:
 	nop
 	
 	
-	li $a0 2000 
+	lw $a0 V
 	mtc0 $a0 $11			#timer event configure
 	li $a0 0
 	mtc0 $a0 $9
@@ -394,7 +402,7 @@ __start:
 	mtc0 $zero $11			
 					
 	la $s0 coord_cabeza
-	lw $s1 4($a0)     		# s1 holds the y coordinate of the head.
+	lw $s1 4($s0)     		# s1 holds the y coordinate of the head.
 	lw $s0 ($s0)				# s0 holds the x coordinate of the head.
 	
 	lw $s2 prev_movement
@@ -406,10 +414,13 @@ __start:
 	move $s2 $v0				# s2 holds the new x coordinate of the head.
 	move $s3 $v1				# s3 holds the new y coordinate of the head.
 	
+	sw $s2 coord_cabeza
+	sw $s3 coord_cabeza+4
+	
 	
 	lw $a0 map 
-	move $a1 $v0
-	move $a2 $v1
+	lw $a1 coord_cabeza
+	lw $a2 coord_cabeza+4
 	jal matriz_obtener		# getting the char at the new head position.
 	
 	lw $t0 pared
@@ -445,13 +456,40 @@ __start:
 	nop
 	
 	pop:
+	lw $a0 snek
+	jal snek_pop
+	nop
 	
+	move $s7 $v0
+	
+	move $a0 $s7
+	jal Pair_fst
+	nop
+	move $s5 $v0
+	
+	move $a0 $s7
+	jal Pair_snd
+	nop
+	move $s6 $v0
+	
+	lw $a0 map
+	move $a1 $s5
+	move $a1 $s6
+	li $a3 0
+	jal matrix_insert		# deleting tail from matrix.
+	nop
+	
+	move $a0 $s5
+	move $a1 $s6
+	li $a2 0
+	jal display				# deleting tail from map.
+	nop
 	
 	movement:
 	
-	move $a3 $a2
-	move $a2 $a1 
-	move $a1 $a0
+	move $a1 $s0
+	move $a2 $s1
+	lw $a3 cuerpo
 	lw $a0 map
 	jal matrix_insert			# replacing old head with body in matrix.
 	
@@ -472,7 +510,7 @@ __start:
 	
 	move $a0 $s2
 	move $a1 $s3
-	lw $a3 cabeza
+	lw $a2 cabeza
 	jal display					# printing new head in the matrix
 	nop
 	
@@ -482,12 +520,15 @@ __start:
 	nop
 	move $a1 $v1
 	lw $a0 snek
-	jal list_push	# inserting in the snek structure.
+	jal snek_push	# inserting in the snek structure.
 	nop 
 	
 	
 	
 	game_loop_end:
+	lw $a0 V
+	mtc0 $a0 $11
+	mtc0 $zero $9
 	j game_loop
 	nop
 																												
