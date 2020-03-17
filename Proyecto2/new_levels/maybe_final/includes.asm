@@ -20,3 +20,4 @@
 .include "snek_push.asm"
 .include "create_snek.asm"
 .include "gen_pasadizos.asm"
+.include "gen_pInter.asm"

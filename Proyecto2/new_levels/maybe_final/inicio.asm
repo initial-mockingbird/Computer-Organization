@@ -173,6 +173,8 @@ inicio:
 	jal gen_pasadizos
 	nop
 	
+	lw	$a0, map
+	jal	gen_pInter
 	end_inicio_generation:
 	jal bad_apple
 	#epilogue

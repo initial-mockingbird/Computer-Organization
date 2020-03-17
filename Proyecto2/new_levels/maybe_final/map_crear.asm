@@ -20,10 +20,10 @@
 
 .data 
 WALLS:	.byte '#'
-#N:	.word 8
-#M:	.word 16
 .text
 
+.globl WALLS
+	
 map_crear:
 	#PROLOGO
 	sw	$fp, 0($sp)
@@ -117,12 +117,12 @@ exit_map_crear:
 	lw	$s2, -16($sp)
 	lw	$s3, -20($sp)
 	lw	$s4, -24($sp)
-	
-	
-	
+
 	jr	$ra
 
 # INCLUDES NECESARIOS EN ALGUNA PARTE
-#.include "Matrix/matrix_HEADER.asm"
-#.include "Matrix/matrix_crear.asm"
-#.include "Matrix/matrix_insert.asm"
+#.include "matrix_HEADER.asm"
+#.include "matrix_crear.asm"
+#.include "matrix_insert.asm"
+#.include "matriz_obtener.asm"
+#.include "gen_pInter.asm"
