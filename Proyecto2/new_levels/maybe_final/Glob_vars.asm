@@ -5,11 +5,11 @@ transmitter_control: .word 0xffff0008
 reciever_control: .word 0xffff0000
 transmitter_data: .word 0xffff000c
 reciever_data: .word 0xffff0004
-V:	.word 50
+V:	.word 1500
 #N: .word 12
 #M: .word 117
-N: .word 10
-M: .word 15
+N: .word 25
+M: .word 25
 S: .word 20	
 manzana: .word 0x40		# "@"
 cuerpo: .word 0x2A		# "*"

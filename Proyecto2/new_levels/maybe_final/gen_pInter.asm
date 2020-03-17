@@ -1,5 +1,13 @@
 
 #$a0 DIR HEADER MATRIZ
+
+#$s0 FILAS
+#$s1 COLUMNAS
+#$s3 FILA RANDOM
+#$s4 COLUMNA RANDOM
+#$s5 BLOQUES A PONER
+#$s6 HEADER DE LA MATRIZ
+
 gen_pInter:
 	sw	$fp, 0($sp)
 	move	$fp, $sp
@@ -15,13 +23,16 @@ gen_pInter:
 	
 	lw	$s0, N
 	lw	$s1, M
-	addi	$s0, $s0, -2	# N - 1
-	addi	$s1, $s1, -2	# M - 1
-	addi	$s2, $zero, 1	# 1
+	addi	$s0, $s0, -1	# N - 1
+	addi	$s1, $s1, -1	# M - 1
+	mul	$s5, $s1, $s0	# Area total del mapa vacia
+	addi	$s0, $s0, -1	# N - 1
+	addi	$s1, $s1, -1	# M - 1
+	
 	move	$s6, $a0	# Guardamos el HEADER de la matriz
 	
-	mul	$s5, $s1, $s0	# Area total del mapa vacia
-	div	$s5, $s5, 10	# Bloques a llenar
+	mul	$s5, $s5, 5
+	div	$s5, $s5, 100	# Bloques a llenar son el 5% porque osea, RIP mas
 
 	
 pInter_loop:
@@ -31,13 +42,13 @@ pInter_loop:
 	
 look_freeBlock:
 	move	$a1, $s0
-	li	$v0, 42		# Random de [0,N-1]
+	li	$v0, 42		# Random de [0,N-1] -1
 	syscall
 	
 	move	$s3, $a0	# Guardamos la pos Y generada
 	addi	$s3, $s3, 1
 	
-	move	$a1, $s1	# Random de [0,M-1]
+	move	$a1, $s1	# Random de [0,M-1] -1
 	syscall	
 	
 	move	$s4, $a0	# Guardamos la pos X generada
@@ -56,10 +67,13 @@ check_bloqueVacio:
 	
 check_xFrente:
 	beq	$s4, 6, sudandofrio_y
-	
+	j	bloque_APROBADO
 	
 sudandofrio_y:
 	beq	$s3, 5, look_freeBlock
+	
+
+bloque_APROBADO:
 	move	$a0, $s6
 	move	$a1, $s3
 	move	$a2, $s4
@@ -68,7 +82,7 @@ sudandofrio_y:
 	jal	matrix_insert
 	
 	move	$a0, $s3
-	move	$a2, $s4
+	move	$a1, $s4	# PROBAR CAPAZ ES INVERSOO MALDITO DANIEL
 	li	$a2, 0x23
 	jal 	display
 		
