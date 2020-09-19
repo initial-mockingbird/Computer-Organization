@@ -1,0 +1,17 @@
+Cosas que se deben tomar en cuenta a la hora de correr el proyecto2:
+
+- Debe poseerse la version de MARS facilitada por el profesor
+  (Puesto que es la version que tiene implementada el timer)
+
+- Por motivos esteticos decidimos que las manzanas seran
+  representadas por el simbolo "@" (@pple) en vez de "$"
+
+- Se debe jugar con la pantalla y teclado proveidos en la opcion:
+  Tools > Keyboard and Display MMIO Simulator.
+
+- Se Debe cambiar el font a Liberation Mono (pues otro tipo de font
+  se comporta de manera extrana con la pantalla), se recomienda
+  ademas usar un tamano superior a 13, y clickear la opcion de
+  bold text para una mejor impresion.
+
+- 
