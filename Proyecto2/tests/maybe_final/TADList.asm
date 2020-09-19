@@ -1,6 +1,0 @@
-.include "list_crear.asm"
-.include "list_destruir.asm"
-.include "list_insertar.asm"
-.include "list_longitud.asm"
-.include "list_obtener.asm"
-.include "list_imprimir.asm"
