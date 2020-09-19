@@ -28,7 +28,6 @@
 
 #.globl matrix_create
 .text
-main:
 	li	$a0, 4
 	li	$a1, 4
 	jal	matrix_create

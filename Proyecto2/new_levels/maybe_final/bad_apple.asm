@@ -4,7 +4,15 @@
 #
 # Out params: <NONE>
 #
-# Method vars: <NONE>
+# Method vars: 
+#
+#	- $a0: used to generate random number 
+#	- $a1  used to generate random number 
+#	- $a2  used to verify if a side-way was already generated on the spot.
+#	- $a3  used to insert in matrix.
+#	- $v0  used to generate random number 
+#	- $v1  used to generate random number 
+#	- $t0  used to hold aux variables such as head/body/wall characters.
 #
 # Side Effects: 
 #	A new apple is printed at the screen, saved at the map, and the score goes up by 1.
@@ -86,6 +94,19 @@
 	lw $a3 manzana
 	jal matrix_insert
 	nop
+	
+	
+	# Actualizando puntaje:
+	#lw $a0 N
+	#div $a0 $a0 2
+	#addi $a0 $a0 1
+	
+	#lw $a1 M
+	#addi $a1 $a1 6 
+	
+	#lw $a2 puntaje
+	
+	#jal display
 	
 	#epilogue
 	addiu $sp $sp 44

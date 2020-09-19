@@ -176,6 +176,21 @@ inicio:
 	lw	$a0, map
 	jal	gen_pInter
 	end_inicio_generation:
+	
+	# Generando puntaje:
+	
+	#lw $a0 N
+	#div $a0 $a0 2
+	
+	#lw $a1 M
+	#addi $a1 $a1 3 
+	
+	#li $a2 0x53
+	
+	#jal display
+	
+	
+	
 	jal bad_apple
 	#epilogue
 	addiu $sp $sp 44

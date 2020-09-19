@@ -1,10 +1,35 @@
+## --- Plan movement w/a/s/d --- ##
+#
+# In Params:
+#
+# Out Params:  <NONE>
+#
+# Method Variables:
+#
+#	- $a0: used to generate random number and open side-ways.
+#	- $a1  used to generate random number and open side-ways.
+#	- $a2  used to verify if a side-way was already generated on the spot.
+#	- $a3  used to insert in matrix.
+#	- $v0  used to generate random number and open side-ways.
+#	- $v1  used to generate random number and open side-ways.
+#	- $s0  used to open the co-side-way.
+#	- $s1  used to open the co-side-way.
+#	
+# Side Effects:
+#	Pasadizo is set to 1 if a pasadizo is crossed.
+#
+#
+## --- End Plan --- ##
+	
 	gen_pasadizos:
 	
 	# prologo
 	sw $fp ($sp)
 	sw $ra -4($sp)
+	sw $s0 -8($sp)
+	sw $s1 -12($sp)
 	move $fp $sp
-	addiu $sp $sp -8
+	addiu $sp $sp -16
 
 
 	li $v0 42
@@ -112,9 +137,11 @@
 	
 	end_pasadizo:
 	# epilogo
-	addiu $sp $sp 8
+	addiu $sp $sp 16
 	lw $fp ($sp)
 	lw $ra -4($sp)
+	lw $s0 -8($sp)
+	lw $s1 -12($sp)
 	jr $ra
 	
 	
